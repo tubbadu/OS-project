@@ -1,3 +1,10 @@
 #!/usr/bin/bash
-cd ./qemu
-kate hw/misc/crypto_core.c include/hw/misc/crypto_core.h hw/riscv/Kconfig hw/misc/meson.build hw/riscv/virt.c hw/misc/Kconfig include/hw/riscv/virt.h
+
+kate \
+	qemu/hw/misc/fft_core.c \
+	qemu/include/hw/misc/fft_core.h \
+	qemu/hw/riscv/Kconfig \
+	qemu/hw/misc/meson.build \
+	qemu/hw/riscv/virt.c \
+	qemu/hw/misc/Kconfig \
+	qemu/include/hw/riscv/virt.h 
