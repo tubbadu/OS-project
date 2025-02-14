@@ -10,7 +10,7 @@ qemu/include/hw/riscv/virt.h"
 
 DEST="files"
 
-cd $DEST && mkdir -p qemu/hw/misc/ qemu/include/hw/misc qemu/hw/riscv qemu/include/hw/riscv
+# cd $DEST && mkdir -p qemu/hw/misc/ qemu/include/hw/misc qemu/hw/riscv qemu/include/hw/riscv
 cd /mnt
 
 for FILE in $FILES; do

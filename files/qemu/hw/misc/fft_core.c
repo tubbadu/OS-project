@@ -21,23 +21,35 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 // static uint64_t decrypt(uint64_t msg, uint64_t p, uint64_t q);
 // static uint64_t mod_exp(uint64_t b, uint64_t exp, uint64_t mod);
 
-#define IN_START_ID 0x0 	//  0      // 
+
+    
+
+#define IN_START_ID 0x0 	//  0      // 0x4000000
 #define IN_END_ID 0X318 	//  792    // 
 #define OUT_START_ID 0x320	//  800    // 0x4000320
 #define OUT_END_ID 0x638	//  1600   // 
 #define STATUS_ID 0x640		//  1602   // 0x4000640
-#define SIZE 100
-#define P 89
-#define Q 181
+#define SIZE 10 // number of values
+#define INSIZE 32
+
+
+// #define N 10  // Number of values to process at a time
 
 /*
  
-example usage:
-busybox devmem 0x4000000 w 0x123 # write an input 
-busybox devmem 0x4000640 w 0x1   # give command "plus 1"
-busybox devmem 0x4000320 64      # read output
-busybox devmem 0x4000640 w 0x2   # give command "minus 1"
-busybox devmem 0x4000320 64      # read output
+ 0x0 = idle
+ 0x1 = add data
+ 0x5 = finished
+ 
+# example usage (accumulator):
+busybox devmem 0x4000000 w 0x123  # write an input 
+busybox devmem 0x4000640 w 0x1    # give command "plus"
+busybox devmem 0x4000000 w 0x5000 # write another input 
+busybox devmem 0x4000640 w 0x1    # give command "plus"
+busybox devmem 0x4000320 64       # read output
+busybox devmem 0x4000000 w 0x1000 # write another input 
+busybox devmem 0x4000640 w 0x2    # give command "minus"
+busybox devmem 0x4000320 64       # read output
  
 */
 
@@ -50,62 +62,107 @@ struct FFTCoreState {
 };
 
 
-// void fft(Complex input[], Complex output[]) {
-//     int N = FFT_SIZE;
-//     
-//     // Copy input to output
-//     for (int i = 0; i < N; i++) {
-//         output[i].real = input[i].real;
-//         output[i].imag = input[i].imag;
-//     }
-//     
-//     // Bit-reversal permutation (simplified for small N)
-//     int j = 0;
-//     for (int i = 1; i < N - 1; i++) {
-//         int bit = N / 2;
-//         while (j >= bit) {
-//             j -= bit;
-//             bit /= 2;
-//         }
-//         j += bit;
-//         if (i < j) {
-//             Complex temp = output[i];
-//             output[i] = output[j];
-//             output[j] = temp;
-//         }
-//     }
-//     
-//     // Compute the FFT
-//     for (int len = 2; len <= N; len *= 2) {
-//         double angle = -2.0 * M_PI / len;
-//         Complex wLen = {cos(angle), sin(angle)};
-//         
-//         for (int i = 0; i < N; i += len) {
-//             Complex w = {1.0, 0.0};
-//             for (int j = 0; j < len / 2; j++) {
-//                 Complex even = output[i + j];
-//                 Complex odd = output[i + j + len / 2];
-//                 
-//                 Complex temp;
-//                 temp.real = w.real * odd.real - w.imag * odd.imag;
-//                 temp.imag = w.real * odd.imag + w.imag * odd.real;
-//                 
-//                 output[i + j].real = even.real + temp.real;
-//                 output[i + j].imag = even.imag + temp.imag;
-//                 output[i + j + len / 2].real = even.real - temp.real;
-//                 output[i + j + len / 2].imag = even.imag - temp.imag;
-//                 
-//                 // Update w
-//                 double newReal = w.real * wLen.real - w.imag * wLen.imag;
-//                 double newImag = w.real * wLen.imag + w.imag * wLen.real;
-//                 w.real = newReal;
-//                 w.imag = newImag;
-//             }
-//         }
-//     }
-// }
+typedef struct {
+    uint64_t real;
+    uint64_t imag;
+} Complex;
 
-static uint64_t pippo_read(void *opaque, hwaddr addr, unsigned int size)
+
+
+static void compute_fft(FFTCoreState *, int);
+static void fft(Complex *, Complex *, int);
+
+/*************************************************************************************/
+
+
+
+
+static void compute_fft(FFTCoreState *s, int size) {
+    Complex invalues [SIZE / 2 + 1]; // +1 for security // TODO check
+    Complex outvalues[SIZE / 2 + 1];
+    
+    for (int k = 0; k < size; k++) { // TODO make a better version of this, perhaps with a while
+        if(k % 2 == 0){ // even position
+            invalues[k/2].real = s->input[k];
+        } else { // odd position
+            invalues[k/2].imag = s->input[k];
+        }
+    }
+    
+    fft(invalues, outvalues, size);
+    
+    for (int k = 0; k < size; k++) { // TODO make a better version of this, perhaps with a while
+        if(k % 2 == 0){ // even position
+            s->output[k] = outvalues[k/2].real;
+        } else { // odd position
+            s->output[k] = outvalues[k/2].imag;
+        }
+    }
+    
+    s->status = 0x5; // finished
+}
+
+
+
+// Function to perform the FFT (Cooley-Tukey Algorithm)
+static void fft(Complex input[], Complex output[], int size) {
+    int N = size;
+    
+    // Copy input to output
+    for (int i = 0; i < N; i++) {
+        output[i].real = input[i].real;
+        output[i].imag = input[i].imag;
+    }
+    
+    // Bit-reversal permutation (simplified for small N)
+    int j = 0;
+    for (int i = 1; i < N - 1; i++) {
+        int bit = N / 2;
+        while (j >= bit) {
+            j -= bit;
+            bit /= 2;
+        }
+        j += bit;
+        if (i < j) {
+            Complex temp = output[i];
+            output[i] = output[j];
+            output[j] = temp;
+        }
+    }
+    
+    // Compute the FFT
+    for (int len = 2; len <= N; len *= 2) {
+        double angle = -2.0 * M_PI / len;
+        Complex wLen = {cos(angle), sin(angle)};
+        
+        for (int i = 0; i < N; i += len) {
+            Complex w = {1.0, 0.0};
+            for (int j = 0; j < len / 2; j++) {
+                Complex even = output[i + j];
+                Complex odd = output[i + j + len / 2];
+                
+                Complex temp;
+                temp.real = w.real * odd.real - w.imag * odd.imag;
+                temp.imag = w.real * odd.imag + w.imag * odd.real;
+                
+                output[i + j].real = even.real + temp.real;
+                output[i + j].imag = even.imag + temp.imag;
+                output[i + j + len / 2].real = even.real - temp.real;
+                output[i + j + len / 2].imag = even.imag - temp.imag;
+                
+                // Update w
+                double newReal = w.real * wLen.real - w.imag * wLen.imag;
+                double newImag = w.real * wLen.imag + w.imag * wLen.real;
+                w.real = newReal;
+                w.imag = newImag;
+            }
+        }
+    }
+}
+
+
+/*************************************************************************************/
+static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
 {
     FFTCoreState *s = opaque;
     
@@ -125,7 +182,7 @@ static uint64_t pippo_read(void *opaque, hwaddr addr, unsigned int size)
     
 }
 
-static void pippo_write(void *opaque, hwaddr addr, uint64_t data, unsigned int size)
+static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned int size)
 {
     FFTCoreState *s = opaque;
     if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
@@ -136,15 +193,13 @@ static void pippo_write(void *opaque, hwaddr addr, uint64_t data, unsigned int s
         return;
     } else if(addr == STATUS_ID){
         if(data == 0x01) {
-            for(int i=0; i<SIZE; i++){
-                s->output[i] = s->input[i] + 1; //encrypt(s->input[i], P, Q);
-            }
-            
+            // new data has been written: process it
+            compute_fft( s, SIZE );
             return;
         } else 
             if(data == 0x02) {
                 for(int i=0; i<SIZE; i++){
-                    s->output[i] = s->input[i] - 1; //decrypt(s->input[i], P, Q);
+                    s->output[i] -= s->input[i]; //decrypt(s->input[i], P, Q);
                 }
                 
                 return;
@@ -153,8 +208,8 @@ static void pippo_write(void *opaque, hwaddr addr, uint64_t data, unsigned int s
 }
 
 static const MemoryRegionOps fft_core_ops = {
-    .read = pippo_read,
-    .write = pippo_write,
+    .read = fft_core_read,
+    .write = fft_core_write,
     .endianness = DEVICE_NATIVE_ENDIAN,
 };
 
@@ -182,9 +237,8 @@ static void fft_core_register_types(void)
 
 type_init(fft_core_register_types)
 
-/*
- * Create the FFT_core device.
- */
+
+// Create the fft_core device.
 DeviceState *fft_core_create(hwaddr addr)
 {
     DeviceState *dev = qdev_new(TYPE_FFT_CORE);
