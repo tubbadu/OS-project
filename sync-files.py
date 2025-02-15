@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import shutil
 import os
 
 BASEDIR = "/mnt"
@@ -21,5 +22,5 @@ def getFiles(directory):
 files = getFiles(os.path.join(BASEDIR, FILESDIR))
 
 for file in files:
-	print(f"mv {os.path.join(BASEDIR, FILESDIR, file)} {os.path.join(BASEDIR, file)} ")
-	os.replace(os.path.join(BASEDIR, FILESDIR, file), os.path.join(BASEDIR, file))
+	print(f"cp {os.path.join(BASEDIR, FILESDIR, file)} {os.path.join(BASEDIR, file)} ")
+	shutil.copyfile(os.path.join(BASEDIR, FILESDIR, file), os.path.join(BASEDIR, file))

@@ -19,4 +19,6 @@ run-qemu:
 
 sync-files:
 	@echo "Synching files..."
-	/mnt/syncfiles.sh
+	python3 /mnt/sync-files.py
+
+all: sync-files build-qemu run-qemu
