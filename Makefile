@@ -17,23 +17,23 @@ help:
 
 build-qemu-riscv:
 	@echo "Configuring and Building QEMU RISCV..."
-	bash build-qemu-riscv.sh
+	bash scripts/build-qemu-riscv.sh
 
 run-qemu-riscv:
 	@echo "Running QEMU RISCV..."
-	bash start-qemu-riscv.sh
+	bash scripts/start-qemu-riscv.sh
 
 sync-files:
 	@echo "Synching files..."
-	python3 sync-files.py
+	python3 scripts/sync-files.py
 
 build-qemu-arm:
 	@echo "Configuring and Building QEMU ARM..."
-	bash build-qemu-arm.sh
+	bash scripts/build-qemu-arm.sh
 
 run-qemu-arm:
 	@echo "Running QEMU ARM..."
-	bash start-qemu-arm.sh
+	bash scripts/start-qemu-arm.sh
 
 all-riscv: sync-files build-qemu-riscv run-qemu-riscv
 

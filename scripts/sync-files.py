@@ -3,9 +3,9 @@
 import shutil
 import os
 
-BASEDIR = os.getcwd() #"/mnt"
+BASEDIR = os.getcwd()
 # QEMUDIR = "qemu"
-FILESDIR = "files"
+FILESDIR = "src"
 
 def getFiles(directory):
 	# Get the absolute path of the given directory
