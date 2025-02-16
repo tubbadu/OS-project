@@ -1,6 +1,6 @@
 .Trash-1000
 trash
-qemu
+./qemu
 buildroot-arm
 buildroot-riscv
 .directory
