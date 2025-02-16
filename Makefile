@@ -12,7 +12,7 @@ help:
 	@echo "  all-riscv             - Sync, build, and run QEMU for RISCV."
 	@echo "  all-arm               - Sync, build, and run QEMU for ARM."
 	@echo "  all                   - Sync, build, and run QEMU for ARM."
-	@echo "  create-setup-arm      - Create setup for ARM."
+	@echo "  create-setup-arm      - Create initial setup for ARM, cloning both Qemu and Buildroot."
 	@echo "  buildroot-build-arm   - Build Buildroot for ARM."
 
 build-qemu-riscv:

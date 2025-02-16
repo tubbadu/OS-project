@@ -3,7 +3,7 @@
 import shutil
 import os
 
-BASEDIR = "/mnt"
+BASEDIR = os.getcwd() #"/mnt"
 # QEMUDIR = "qemu"
 FILESDIR = "files"
 
