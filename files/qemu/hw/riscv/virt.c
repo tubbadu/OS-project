@@ -734,7 +734,7 @@ static void virt_machine_init(MachineState *machine)
     sifive_test_create(memmap[VIRT_TEST].base);
     
     /* fft_core device */
-    fft_core_create(memmap[VIRT_FFT_CORE].base);
+    fft_core_create_riscv(memmap[VIRT_FFT_CORE].base);
 
     /* VirtIO MMIO devices */
     for (i = 0; i < VIRTIO_COUNT; i++) {
