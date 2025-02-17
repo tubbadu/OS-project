@@ -2,7 +2,7 @@
 
 This guide provides step-by-step instructions to set up QEMU and Buildroot on Ubuntu, modify necessary files, and use the provided Makefile for automation.
 
-## 1. Install Required Packages
+## Install Required Packages
 To ensure a smooth setup, install the necessary dependencies using the following command:
 
 ```sh
@@ -14,67 +14,6 @@ sudo apt update && sudo apt install -y git libglib2.0-dev libfdt-dev libpixman-1
   libncurses5-dev libncursesw5-dev libx11-dev libxext-dev libxt-dev \
   libpng-dev libjpeg8-dev libvte-2.91-dev libfuse-dev git make rsync
 ```
-
-## 2. Install QEMU
-Clone the QEMU repository and check out the desired version:
-
-```sh
-git clone https://github.com/qemu/qemu.git
-cd qemu
-git checkout v6.0.0
-```
-
-Initialize and update QEMU submodules:
-
-```sh
-git submodule init
-git submodule update
-```
-
-Create a build directory and configure QEMU for ARM64 emulation:
-
-```sh
-mkdir build
-cd build
-../configure --target-list=aarch64-softmmu
-make -j$(nproc)
-```
-
-## 3. Install Buildroot
-Clone the Buildroot repository:
-
-```sh
-git clone https://github.com/buildroot/buildroot.git
-cd buildroot/
-```
-
-Configure Buildroot for QEMU ARM64:
-
-```sh
-make qemu_aarch64_virt_defconfig
-make -j$(nproc)
-```
-
-## 4. Modify Necessary Files
-Use the provided Python script to copy and replace required files:
-
-```sh
-python3 scripts/sync-files.py
-```
-
-This script iterates through the relevant directories in QEMU and Buildroot, ensuring the necessary modifications are applied.
-
-## 5. Run QEMU with Buildroot
-Navigate to the generated images directory and start QEMU:
-
-```sh
-cd output/images
-sh start-qemu.sh
-```
-
-This will launch QEMU with the configured Buildroot system.
-
----
 
 # FFT_CORE
 
