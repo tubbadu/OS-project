@@ -14,11 +14,13 @@ else
 	cd ..
 fi
 
-if [ ! -d "$FOLDERBUILDROOT" ]; then
-    if [ ! -d "$FOLDERBUILDROOTARM" ]; then
+if [ ! -d "$FOLDERBUILDROOTARM" ]; then
+    if [ ! -d "$FOLDERBUILDROOT" ]; then
 		echo "Error: $FOLDERBUILDROOT or $FOLDERBUILDROOTARM do not exist."
 		echo "$ERRORMSG"
 		exit 1
 	else
-	mv "$FOLDERBUILDROOT" "$FOLDERBUILDROOTARM"
+		echo "stuff"
+		mv "$FOLDERBUILDROOT" "$FOLDERBUILDROOTARM"
+	fi
 fi
