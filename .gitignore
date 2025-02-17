@@ -5,3 +5,4 @@ buildroot-arm
 buildroot-riscv
 .directory
 .hidden
+.env

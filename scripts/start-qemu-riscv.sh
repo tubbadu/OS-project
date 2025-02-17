@@ -1,5 +1,5 @@
 #!/bin/sh
-
+source .env
 cd buildroot-riscv/output/images/
 
 

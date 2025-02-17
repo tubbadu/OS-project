@@ -51,3 +51,13 @@ buildroot-build-arm:
 	cd buildroot-arm
 	make qemu_aarch64_virt_defconfig
 	make
+
+buildroot-build-riscv:
+	@echo "Building buildroot for RISCV..."
+	cd buildroot-arm
+	make qemu_riscv64_virt_defconfig
+	make
+
+setup:
+	@echo "Creating .env file..."
+	bash scripts/setup.sh
