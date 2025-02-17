@@ -1,7 +1,24 @@
-git clone https://github.com/qemu/qemu.git
-cd qemu
-git checkout v6.0.0
-cd ..
+FOLDERQEMU="qemu"
+FOLDERBUILDROOT="buildroot"
+FOLDERBUILDROOTARM="buildroot-arm"
+ERRORMSG="Run 'make clone-repos' to clone the qemu and buildroot repositories in the current folder. If you already cloned them, move them in the current directory and run this command again."
 
-git clone https://github.com/buildroot/buildroot.git
-mv buildroot buildroot-arm
+if [ ! -d "$FOLDERQEMU" ]; then
+    echo "Error: $FOLDERQEMU does not exist."
+    echo "$ERRORMSG"
+    exit 1
+else
+	cd qemu
+	git checkout v6.0.0
+	mkdir -p build-arm build-riscv
+	cd ..
+fi
+
+if [ ! -d "$FOLDERBUILDROOT" ]; then
+    if [ ! -d "$FOLDERBUILDROOTARM" ]; then
+		echo "Error: $FOLDERBUILDROOT or $FOLDERBUILDROOTARM do not exist."
+		echo "$ERRORMSG"
+		exit 1
+	else
+	mv "$FOLDERBUILDROOT" "$FOLDERBUILDROOTARM"
+fi
