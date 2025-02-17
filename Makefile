@@ -16,9 +16,7 @@ help:
 	@echo "  sync-files             - Sync QEMU modified files." # TODO find a better name for this target
 	@echo "  all-riscv              - Sync, build, and run QEMU for RISCV."
 	@echo "  all-arm                - Sync, build, and run QEMU for ARM."
-	
-	
-	
+
 
 build-qemu-riscv:
 	@echo "Configuring and Building QEMU RISCV..."

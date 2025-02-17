@@ -19,7 +19,7 @@
 
 	```shell
 	make clone-repos
-```
+	```
 
 4. create the setup for the build environment:
 
