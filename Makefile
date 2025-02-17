@@ -4,19 +4,21 @@
 
 help:
 	@echo "Available targets:"
-	@echo "  build-qemu-riscv       - Configure and build QEMU for RISCV."
-	@echo "  run-qemu-riscv         - Run QEMU for RISCV."
-	@echo "  build-qemu-arm         - Configure and build QEMU for ARM."
-	@echo "  run-qemu-arm           - Run QEMU for ARM."
-	@echo "  sync-files             - Sync QEMU modified files."
-	@echo "  all-riscv              - Sync, build, and run QEMU for RISCV."
-	@echo "  all-arm                - Sync, build, and run QEMU for ARM."
-	@echo "  all                    - Sync, build, and run QEMU for ARM."
+	@echo "  env                    - Create .env file."
+	@echo "  clone-repos            - Clone QEMU and Buildroot repositories."
 	@echo "  create-setup-arm       - Create initial setup for ARM, cloning both QEMU and Buildroot."
 	@echo "  buildroot-build-arm    - Build Buildroot for ARM."
 	@echo "  buildroot-build-riscv  - Build Buildroot for RISCV."
-	@echo "  env                    - Create .env file."
-	@echo "  clone-repos            - Clone QEMU and Buildroot repositories."
+	@echo "  build-qemu-arm         - Configure and build QEMU for ARM."
+	@echo "  build-qemu-riscv       - Configure and build QEMU for RISCV."
+	@echo "  run-qemu-arm           - Run QEMU for ARM."
+	@echo "  run-qemu-riscv         - Run QEMU for RISCV."
+	@echo "  sync-files             - Sync QEMU modified files." # TODO find a better name for this target
+	@echo "  all-riscv              - Sync, build, and run QEMU for RISCV."
+	@echo "  all-arm                - Sync, build, and run QEMU for ARM."
+	
+	
+	
 
 build-qemu-riscv:
 	@echo "Configuring and Building QEMU RISCV..."
@@ -41,9 +43,6 @@ run-qemu-arm:
 all-riscv: sync-files build-qemu-riscv run-qemu-riscv
 
 all-arm: sync-files build-qemu-arm run-qemu-arm
-
-all: all-arm # debug only, TODO remove
-
 
 create-setup-arm:
 	@echo "Creating setup for ARM..."
