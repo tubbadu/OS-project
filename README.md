@@ -15,7 +15,31 @@ sudo apt update && sudo apt install -y git libglib2.0-dev libfdt-dev libpixman-1
   libpng-dev libjpeg8-dev libvte-2.91-dev libfuse-dev git make rsync
 ```
 
-# FFT_CORE
+# Makefile Guide for QEMU and Buildroot (ARM & RISC-V)
+
+This repository provides a Makefile to automate the process of building and running QEMU and Buildroot for both ARM and RISC-V architectures.
+
+## Available Makefile Targets
+
+Run `make help` to see available targets:
+
+```sh
+make help
+```
+
+### Makefile Targets
+
+- `build-qemu-riscv` - Configure and build QEMU for RISC-V.
+- `run-qemu-riscv` - Run QEMU for RISC-V.
+- `build-qemu-arm` - Configure and build QEMU for ARM.
+- `run-qemu-arm` - Run QEMU for ARM.
+- `sync-files` - Synchronize QEMU modified files.
+- `all-riscv` - Sync, build, and run QEMU for RISC-V.
+- `all-arm` - Sync, build, and run QEMU for ARM.
+- `all` - Sync, build, and run QEMU for ARM.
+- `create-setup-arm` - Create initial setup for ARM, cloning both QEMU and Buildroot.
+- `buildroot-build-arm` - Build Buildroot for ARM.
+
 
 ## Build Instructions:
 
@@ -69,70 +93,6 @@ sudo apt update && sudo apt install -y git libglib2.0-dev libfdt-dev libpixman-1
    ```
 
 ---
-
-# Makefile Guide for QEMU and Buildroot (ARM & RISC-V)
-
-This repository provides a Makefile to automate the process of building and running QEMU and Buildroot for both ARM and RISC-V architectures.
-
-## Available Makefile Targets
-
-Run `make help` to see available targets:
-
-```sh
-make help
-```
-
-### Makefile Targets
-
-- `build-qemu-riscv` - Configure and build QEMU for RISC-V.
-- `run-qemu-riscv` - Run QEMU for RISC-V.
-- `build-qemu-arm` - Configure and build QEMU for ARM.
-- `run-qemu-arm` - Run QEMU for ARM.
-- `sync-files` - Synchronize QEMU modified files.
-- `all-riscv` - Sync, build, and run QEMU for RISC-V.
-- `all-arm` - Sync, build, and run QEMU for ARM.
-- `all` - Sync, build, and run QEMU for ARM.
-- `create-setup-arm` - Create initial setup for ARM, cloning both QEMU and Buildroot.
-- `buildroot-build-arm` - Build Buildroot for ARM.
-
-### Usage Examples
-
-#### Build and Run QEMU for RISC-V
-```sh
-make build-qemu-riscv
-make run-qemu-riscv
-```
-
-#### Build and Run QEMU for ARM
-```sh
-make build-qemu-arm
-make run-qemu-arm
-```
-
-#### Modify and Sync Necessary Files
-```sh
-make sync-files
-```
-
-#### Build Buildroot for ARM
-```sh
-make buildroot-build-arm
-```
-
-#### Create Setup for ARM
-```sh
-make create-setup-arm
-```
-
-#### Build and Run Everything for ARM
-```sh
-make all-arm
-```
-
-#### Build and Run Everything for RISC-V
-```sh
-make all-riscv
-```
 
 This Makefile, along with the provided Python script, ensures that QEMU and Buildroot are properly set up, required files are modified, and both ARM and RISC-V architectures can be built and tested efficiently.
 
