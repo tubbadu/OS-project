@@ -8,7 +8,7 @@
 #include "fft_module.h"
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Group xx");
+MODULE_AUTHOR("Group 06");
 MODULE_DESCRIPTION("A driver for the FFT hardware accelerator");
 MODULE_VERSION("1.0");
 
