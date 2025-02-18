@@ -91,7 +91,9 @@ make help
    ```shell
    make run-qemu-arm
    ```
-
+  
+  When prompted for a login, type `root` and press Enter. Congrats, you are now inside the VM!
+  
 ---
 
 This Makefile, along with the provided Python script, ensures that QEMU and Buildroot are properly set up, required files are modified, and both ARM and RISC-V architectures can be built and tested efficiently. (**#TODO** remove this if we don't achieve to build RISCV correctly!)
