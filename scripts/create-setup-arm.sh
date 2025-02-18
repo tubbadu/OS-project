@@ -20,7 +20,6 @@ if [ ! -d "$FOLDERBUILDROOTARM" ]; then
 		echo "$ERRORMSG"
 		exit 1
 	else
-		echo "stuff"
 		mv "$FOLDERBUILDROOT" "$FOLDERBUILDROOTARM"
 	fi
 fi
