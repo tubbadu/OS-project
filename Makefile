@@ -42,10 +42,6 @@ all-riscv: sync-files build-qemu-riscv run-qemu-riscv
 
 all-arm: sync-files build-qemu-arm run-qemu-arm
 
-#create-setup-arm:
-#	@echo "Creating setup for ARM..."
-#	bash create-setup-arm.sh
-
 buildroot-build-arm:
 	@echo "Building Buildroot for ARM..."
 	cd buildroot-arm && make qemu_aarch64_virt_defconfig && make

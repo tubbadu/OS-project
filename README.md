@@ -3,6 +3,7 @@
 This guide provides step-by-step instructions to set up QEMU and Buildroot on Ubuntu, modify necessary files, and use the provided Makefile for automation.
 
 ## Install Required Packages
+
 To ensure a smooth setup, install the necessary dependencies using the following command:
 
 ```sh
@@ -40,59 +41,59 @@ make help
 - `create-setup-arm` - Create initial setup for ARM, cloning both QEMU and Buildroot.
 - `buildroot-build-arm` - Build Buildroot for ARM.
 
-
 ## Build Instructions:
 
 1. Clone this repository:
-
+   
    ```shell
    git clone https://github.com/tubbadu/OS-project/tree/main
    cd OS-project
    ```
 
 2. Create `.env` file:
-
+   
    ```shell
    make env
    ```
 
 3. Clone [Buildroot](https://github.com/buildroot/buildroot) and [QEMU](https://github.com/qemu/qemu) repositories (if you already cloned them, you can move them inside `OS-project` and skip this step):
-
+   
    ```shell
    make clone-repos
    ```
 
 4. Create the setup for the build environment:
-
+   
    ```shell
    make create-setup-arm
    ```
 
 5. Build Buildroot (it will take a while):
-
+   
    ```shell
    make buildroot-build-arm
    ```
 
 6. Insert the FFT_CORE source files in QEMU:
-
+   
    ```shell
    make sync-files
    ```
 
 7. Build QEMU with the FFT_CORE (it will take a while):
-
+   
    ```shell
    make build-qemu-arm
    ```
 
 8. Run the modified QEMU:
-
+   
    ```shell
    make run-qemu-arm
    ```
-
+  
+  When prompted for a login, type `root` and press Enter. Congrats, you are now inside the VM!
+  
 ---
 
-This Makefile, along with the provided Python script, ensures that QEMU and Buildroot are properly set up, required files are modified, and both ARM and RISC-V architectures can be built and tested efficiently.
-
+This Makefile, along with the provided Python script, ensures that QEMU and Buildroot are properly set up, required files are modified, and both ARM and RISC-V architectures can be built and tested efficiently. (**#TODO** remove this if we don't achieve to build RISCV correctly!)
