@@ -63,3 +63,7 @@ clone-repos:
 create-setup-arm:
 	@echo "Creating setup for ARM..."
 	bash scripts/create-setup-arm.sh
+
+build-fft-module:
+	@echo "Building FFT module..."
+	bash scripts/build-fft-module.sh

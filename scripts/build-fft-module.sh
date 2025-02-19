@@ -1,16 +1,17 @@
 #!/bin/bash
 
 export PATH=$(echo "$PATH" | tr -d ' \t\n')
+source .env
 
-KERNEL_DIR="/home/selenkarakas/os/OS-project/buildroot-arm/output/build/linux-6.12.9"
+KERNEL_DIR="$BASEDIR/buildroot-arm/output/build/linux-6.12.9"
 MODULE_DIR="$KERNEL_DIR/drivers/platform"
-SCRIPT_DIR="/home/selenkarakas/os/OS-project/scripts"
-OUTPUT_DIR="/home/selenkarakas/os/OS-project/buildroot-arm/output"
+SCRIPT_DIR="$BASEDIR/scripts"
+OUTPUT_DIR="$BASEDIR/buildroot-arm/output"
 TARGET_DIR="$OUTPUT_DIR/target"
 CROSS_COMPILE="$OUTPUT_DIR/host/bin/arm-linux-"
 
-cp /home/selenkarakas/os/OS-project/src/kernel/fft_module.c $MODULE_DIR/
-cp /home/selenkarakas/os/OS-project/src/kernel/fft_module.h $MODULE_DIR/
+cp "$BASEDIR/src/kernel/fft_module.c" "$MODULE_DIR/"
+cp "$BASEDIR/src/kernel/fft_module.h" "$MODULE_DIR/"
 
 echo 'obj-$(CONFIG_FFT_MODULE) += fft_module.o' >> $MODULE_DIR/Makefile
 
