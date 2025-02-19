@@ -5,7 +5,7 @@
 #define CLASS_NAME "fft_class" ///< The device class -- this is a character device driver
 
 #define FFT_k 0xFF
-#define FFT_COMPUTE _IOW(FFT_k, 1, int)
+#define FFT_COMPUTE _IOWR(FFT_k, 1, struct fft_data *)
 
 #define FFT_INPUT_START 0x090c0000
 #define FFT_OUTPUT_START 0x090c0320

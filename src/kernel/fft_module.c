@@ -42,7 +42,7 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
         return -EFAULT;
 
     switch (cmd) {
-        case 0: // FFT compute command
+        case FFT_COMPUTE:
             fft_compute(data.input, data.output, data.len);
             break;
         default:
@@ -86,7 +86,6 @@ static int __init fft_module_init(void) {
     }
     printk(KERN_INFO "FFT: registered correctly with major number %d\n", majorNumber);
 
-    fftClass = class_create(CLASS_NAME); // Fix the class_create function call
     if (IS_ERR(fftClass)) {
         unregister_chrdev(majorNumber, DEVICE_NAME);
         printk(KERN_ALERT "Failed to register device class\n");
