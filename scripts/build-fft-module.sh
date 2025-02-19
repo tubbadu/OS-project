@@ -4,6 +4,7 @@ export PATH=$(echo "$PATH" | tr -d ' \t\n')
 source .env
 
 KERNEL_DIR="$BASEDIR/buildroot-arm/output/build/linux-6.12.9"
+BUILDROOT_DIR="$BASEDIR/buildroot-arm"
 MODULE_DIR="$KERNEL_DIR/drivers/platform"
 SCRIPT_DIR="$BASEDIR/scripts"
 OUTPUT_DIR="$BASEDIR/buildroot-arm/output"
@@ -28,17 +29,6 @@ if ! grep -q 'source "drivers/platform/Kconfig"' $KERNEL_DIR/drivers/Kconfig; th
     echo 'source "drivers/platform/Kconfig"' >> $KERNEL_DIR/drivers/Kconfig
 fi
 
-make -C $KERNEL_DIR ARCH=arm CROSS_COMPILE=$CROSS_COMPILE menuconfig
-
-make -C $KERNEL_DIR ARCH=arm CROSS_COMPILE=$CROSS_COMPILE
-
-cp $MODULE_DIR/fft_module.ko $TARGET_DIR/lib/modules/$(uname -r)/kernel/drivers/platform/
-
-$QEMU_ARM -M virt -kernel $OUTPUT_DIR/images/zImage -append "root=/dev/vda rw" -drive file=$OUTPUT_DIR/images/rootfs.ext2,format=raw -net nic -net user -nographic
-
-# Load the module in QEMU ??????????????????????????
-
-#ssh root@localhost -p 2222 'insmod /lib/modules/$(uname -r)/kernel/drivers/platform/fft_module.ko'
-#ssh root@localhost -p 2222 'depmod -a && modprobe fft_module'
-
-#echo "FFT module build and installation script completed."
+cd $BUILDROOT_DIR
+make linux-menuconfig
+make linux-rebuild
