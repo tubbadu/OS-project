@@ -67,3 +67,7 @@ create-setup-arm:
 build-fft-module:
 	@echo "Building FFT module..."
 	bash scripts/build-fft-module.sh
+
+withkernel_start-qemu:
+	@echo "Running QEMU with kernel module..."
+	bash scripts/withkernel_start-qemu.sh

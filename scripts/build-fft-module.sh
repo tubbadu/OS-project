@@ -33,8 +33,6 @@ cd $BUILDROOT_DIR
 make ARCH=aarch64 CROSS_COMPILE=$CROSS_COMPILE linux-menuconfig
 make ARCH=aarch64 CROSS_COMPILE=$CROSS_COMPILE linux-rebuild
 
-# Ensure the target directory structure exists
 mkdir -p $TARGET_DIR/lib/modules/6.12.9/kernel/drivers/platform/
 
-# Copy the built module to the target directory
 cp $KERNEL_DIR/drivers/platform/fft_module.ko $TARGET_DIR/lib/modules/6.12.9/kernel/drivers/platform/

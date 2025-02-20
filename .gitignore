@@ -2,8 +2,8 @@
 trash
 qemu
 !src/*
-buildroot-arm
-buildroot-riscv
+buildroot-arm*
+buildroot-riscv*
 .directory
 .hidden
 .env
