@@ -11,8 +11,8 @@ OUTPUT_DIR="$BASEDIR/buildroot-arm/output"
 TARGET_DIR="$OUTPUT_DIR/target"
 CROSS_COMPILE="$OUTPUT_DIR/host/bin/arm-linux-"
 
-cp "$BASEDIR/src/kernel/fft_module.c" "$MODULE_DIR/"
-cp "$BASEDIR/src/kernel/fft_module.h" "$MODULE_DIR/"
+# cp "$BASEDIR/src/kernel/fft_module.c" "$MODULE_DIR/"
+# cp "$BASEDIR/src/kernel/fft_module.h" "$MODULE_DIR/"
 
 # echo 'obj-$(CONFIG_FFT_MODULE) += fft_module.o' >> $MODULE_DIR/Makefile
 
