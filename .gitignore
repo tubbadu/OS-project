@@ -2,10 +2,12 @@
 trash
 .trash
 qemu
+buildroot.virgin
 buildroot-arm*
 buildroot-riscv*
 .directory
 .hidden
 .env
+fft_module.ko.bak2
 
 !src/*
