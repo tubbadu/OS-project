@@ -71,3 +71,8 @@ build-fft-module:
 withkernel_start-qemu:
 	@echo "Running QEMU with kernel module..."
 	bash scripts/withkernel_start-qemu.sh
+	
+build-kernel-module:
+	@echo "Building kernel module..."
+	make -C buildroot-arm fft_module-dirclean
+	make -C buildroot-arm
