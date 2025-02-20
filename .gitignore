@@ -1,9 +1,11 @@
 .Trash-1000
 trash
+.trash
 qemu
-!src/*
 buildroot-arm*
 buildroot-riscv*
 .directory
 .hidden
 .env
+
+!src/*

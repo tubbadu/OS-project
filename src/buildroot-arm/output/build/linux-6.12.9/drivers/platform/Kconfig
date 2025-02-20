@@ -1,0 +1,6 @@
+config FFT_MODULE
+    tristate "FFT Hardware Accelerator Module"
+    depends on ARM64
+    default n
+    help
+      This is a driver for the FFT hardware accelerator.
