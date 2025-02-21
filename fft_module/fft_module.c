@@ -77,7 +77,7 @@ static ssize_t fft_compute(const uint64_t *input, uint64_t *output, size_t len) 
 }
 
 static int __init fft_module_init(void) {
-    printk(KERN_INFO "FFT: Initializing the FFT driver!!!!???\n");
+    printk(KERN_INFO "FFT: Initializing the FFT driver!\n");
 
     majorNumber = register_chrdev(0, DEVICE_NAME, &fops);
     if (majorNumber < 0) {
