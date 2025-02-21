@@ -86,6 +86,7 @@ static int __init fft_module_init(void) {
     }
     printk(KERN_INFO "FFT: registered correctly with major number %d\n", majorNumber);
 
+    fftClass = class_create(CLASS_NAME);
     if (IS_ERR(fftClass)) {
         unregister_chrdev(majorNumber, DEVICE_NAME);
         printk(KERN_ALERT "Failed to register device class\n");
