@@ -75,6 +75,10 @@ build-test:
 	@echo "Building kernel module test..."
 	bash scripts/build-fft-test.sh
 
+copy-test:
+	@echo "Copying test executable to root filesystem..."
+	bash scripts/copy-test-in-rootfs.sh
+
 all-riscv: sync-files build-qemu-riscv  run-qemu-riscv
 
 all-arm: sync-files build-qemu-arm build-kernel-module-arm run-qemu-arm
