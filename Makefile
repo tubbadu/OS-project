@@ -71,6 +71,10 @@ build-kernel-module-arm:
 	make -C buildroot-arm fft_module-dirclean
 	make -C buildroot-arm
 
+build-test:
+	@echo "Building kernel module test..."
+	bash scripts/build-fft-test.sh
+
 all-riscv: sync-files build-qemu-riscv  run-qemu-riscv
 
 all-arm: sync-files build-qemu-arm build-kernel-module-arm run-qemu-arm

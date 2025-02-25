@@ -46,7 +46,7 @@ make help
 1. Clone this repository:
    
    ```shell
-   git clone https://github.com/tubbadu/OS-project/tree/main
+   git clone https://github.com/tubbadu/OS-project.git
    cd OS-project
    ```
 
