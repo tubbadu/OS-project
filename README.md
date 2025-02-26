@@ -52,33 +52,33 @@ make help
 
 3. Clone [Buildroot](https://github.com/buildroot/buildroot) and [QEMU](https://github.com/qemu/qemu) repositories (if you already cloned them, you can move them inside `OS-project` and skip this step):
    
-   ```shell
-   make clone-repos
-   ```
+  ```shell
+  make clone-repos
+  ```
 
 4. Create the setup for the build environment: (perhaps unnecessary? TODO)
    
-   ```shell
-   make create-setup-arm
-   ```
+  ```shell
+  make create-setup-arm
+  ```
 
 5. Build Buildroot (it will take a while):
    
-   ```shell
-   make buildroot-build-arm
-   ```
+  ```shell
+  make buildroot-build-arm
+  ```
 
 6. Apply the modifications to the source files of QEMU and Buildroot:
    
-   ```shell
-   make apply-mods
-   ```
+  ```shell
+  make apply-mods
+  ```
 
 7. Build QEMU with the FFT_CORE (it will take a while):
    
-   ```shell
-   make build-qemu-arm
-   ```
+  ```shell
+  make build-qemu-arm
+  ```
    
 8. Build the kernel module inside Buildroot:
 
@@ -99,9 +99,9 @@ make help
   
 11. Run the Buildroot image with the modified QEMU:
    
-   ```shell
-   make run-qemu-arm
-   ```
+  ```shell
+  make run-qemu-arm
+  ```
   
 When prompted for a login, type `root` and press Enter. Congrats, you are now inside the VM!
   
