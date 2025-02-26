@@ -7,13 +7,7 @@ This guide provides step-by-step instructions to set up QEMU and Buildroot on Ub
 To ensure a smooth setup, install the necessary dependencies using the following command:
 
 ```sh
-sudo apt update && sudo apt install -y git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev \
-  ninja-build build-essential python3 python3-pip libaio-dev libcap-ng-dev \
-  libiscsi-dev libattr1-dev libnfs-dev libudev-dev libxen-dev libepoxy-dev \
-  libdrm-dev libgbm-dev libvirglrenderer-dev libgtk-3-dev libspice-protocol-dev \
-  libspice-server-dev libusb-1.0-0-dev libpulse-dev libsdl2-dev libslirp-dev \
-  libncurses5-dev libncursesw5-dev libx11-dev libxext-dev libxt-dev \
-  libpng-dev libjpeg8-dev libvte-2.91-dev libfuse-dev git make rsync
+sudo apt update && sudo apt install -y $(cat requirements.txt)  
 ```
 
 # Makefile Guide for QEMU and Buildroot (ARM & RISC-V)
@@ -30,16 +24,16 @@ make help
 
 ### Makefile Targets
 
-- `build-qemu-riscv` - Configure and build QEMU for RISC-V.
-- `run-qemu-riscv` - Run QEMU for RISC-V.
-- `build-qemu-arm` - Configure and build QEMU for ARM.
-- `run-qemu-arm` - Run QEMU for ARM.
-- `sync-files` - Synchronize QEMU modified files.
-- `all-riscv` - Sync, build, and run QEMU for RISC-V.
-- `all-arm` - Sync, build, and run QEMU for ARM.
-- `all` - Sync, build, and run QEMU for ARM.
-- `create-setup-arm` - Create initial setup for ARM, cloning both QEMU and Buildroot.
-- `buildroot-build-arm` - Build Buildroot for ARM.
+- `env`                       - Create .env file.
+- `clone-repos`               - Clone QEMU and Buildroot repositories.
+- `create-setup-arm`          - Create initial setup for ARM, cloning both QEMU and Buildroot.
+- `build-buildroot-arm`       - Build Buildroot for ARM.
+- `build-qemu-arm`            - Configure and build QEMU for ARM.
+- `run-qemu-arm`              - Run QEMU for ARM.
+- `apply-mods`                - Sync modified files.
+- `build-kernel-module-arm`   - Build kernel module for ARM.
+- `build-test`                - Build kernel module test.
+- `copy-test`                 - Copy test executable to root filesystem.
 
 ## Build Instructions:
 
@@ -62,7 +56,7 @@ make help
    make clone-repos
    ```
 
-4. Create the setup for the build environment:
+4. Create the setup for the build environment: (perhaps unnecessary? TODO)
    
    ```shell
    make create-setup-arm
@@ -74,10 +68,10 @@ make help
    make buildroot-build-arm
    ```
 
-6. Insert the FFT_CORE source files in QEMU:
+6. Apply the modifications to the source files of QEMU and Buildroot:
    
    ```shell
-   make sync-files
+   make apply-mods
    ```
 
 7. Build QEMU with the FFT_CORE (it will take a while):
@@ -85,14 +79,42 @@ make help
    ```shell
    make build-qemu-arm
    ```
+   
+8. Build the kernel module inside Buildroot:
 
-8. Run the modified QEMU:
+  ```shell
+  make build-kernel-module-arm
+  ```
+
+9. Cross-compile the test:
+
+  ```shell
+  make build-test
+  ```
+10. Copy the test inside the root filesystem of the buildroot image
+
+  ```shell
+  make copy-test
+  ```
+  
+11. Run the Buildroot image with the modified QEMU:
    
    ```shell
    make run-qemu-arm
    ```
   
-  When prompted for a login, type `root` and press Enter. Congrats, you are now inside the VM!
+When prompted for a login, type `root` and press Enter. Congrats, you are now inside the VM!
+  
+You can install the kernel module with:
+```shell
+/opt/install-kernel-module.sh
+```
+
+You can then run the test:
+```shell
+/opt/fft_test
+```
+  
   
 ---
 
