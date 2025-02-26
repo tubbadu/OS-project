@@ -39,16 +39,16 @@ make help
 
 1. Clone this repository:
    
-   ```shell
-   git clone https://github.com/tubbadu/OS-project.git
-   cd OS-project
-   ```
+  ```shell
+  git clone https://github.com/tubbadu/OS-project.git
+  cd OS-project
+  ```
 
 2. Create `.env` file:
    
-   ```shell
-   make env
-   ```
+  ```shell
+  make env
+  ```
 
 3. Clone [Buildroot](https://github.com/buildroot/buildroot) and [QEMU](https://github.com/qemu/qemu) repositories (if you already cloned them, you can move them inside `OS-project` and skip this step):
    
