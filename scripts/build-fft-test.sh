@@ -1,6 +1,9 @@
 #!/bin/bash
 
-CROSS_COMPILE=/home/selenkarakas/OS-project/buildroot-arm/output/host/bin/aarch64-linux-
+source .env
+CROSS_COMPILE="$BASEDIR/buildroot-arm/output/host/bin/aarch64-linux-"
+
+cd $BASEDIR/test
 
 CC=${CROSS_COMPILE}gcc
 CFLAGS="-I../kernel"

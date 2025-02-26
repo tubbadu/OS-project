@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <stdint.h>
-#include "../kernel/fft_module.h"
+#include "../fft_module/fft_module.h"
 
 int main() {
     int fd;
