@@ -1,9 +1,13 @@
 .Trash-1000
 trash
+.trash
 qemu
-!src/*
-buildroot-arm
-buildroot-riscv
+buildroot.virgin
+buildroot-arm*
+buildroot-riscv*
 .directory
 .hidden
 .env
+fft_module.ko.bak*
+
+!src/*

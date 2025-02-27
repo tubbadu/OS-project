@@ -35,12 +35,6 @@ static struct file_operations fops = {
    .unlocked_ioctl = fft_ioctl
 };
 
-struct fft_data {
-    uint64_t input[16];
-    uint64_t output[16];
-    size_t len;
-};
-
 static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
     struct fft_data data;
 
@@ -48,7 +42,7 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
         return -EFAULT;
 
     switch (cmd) {
-        case 0: // FFT compute command
+        case FFT_COMPUTE:
             fft_compute(data.input, data.output, data.len);
             break;
         default:
@@ -83,7 +77,7 @@ static ssize_t fft_compute(const uint64_t *input, uint64_t *output, size_t len) 
 }
 
 static int __init fft_module_init(void) {
-    printk(KERN_INFO "FFT: Initializing the FFT driver\n");
+    printk(KERN_INFO "FFT: Initializing the FFT driver!\n");
 
     majorNumber = register_chrdev(0, DEVICE_NAME, &fops);
     if (majorNumber < 0) {
@@ -92,7 +86,7 @@ static int __init fft_module_init(void) {
     }
     printk(KERN_INFO "FFT: registered correctly with major number %d\n", majorNumber);
 
-    fftClass = class_create(THIS_MODULE, CLASS_NAME);
+    fftClass = class_create(CLASS_NAME);
     if (IS_ERR(fftClass)) {
         unregister_chrdev(majorNumber, DEVICE_NAME);
         printk(KERN_ALERT "Failed to register device class\n");
@@ -127,7 +121,7 @@ static void __exit fft_module_exit(void) {
     class_unregister(fftClass);
     class_destroy(fftClass);
     unregister_chrdev(majorNumber, DEVICE_NAME);
-    printk(KERN_INFO "FFT: Goodbye from the FFT driver!\n");
+    printk(KERN_INFO "FFT: Goodbye from the FFT driver!!!\n");
 }
 
 module_init(fft_module_init);

@@ -23,4 +23,5 @@ files = getFiles(os.path.join(BASEDIR, FILESDIR))
 
 for file in files:
 	print(f"cp {os.path.join(BASEDIR, FILESDIR, file)} {os.path.join(BASEDIR, file)} ")
+	os.makedirs(os.path.dirname(os.path.join(BASEDIR, file)), exist_ok=True)
 	shutil.copyfile(os.path.join(BASEDIR, FILESDIR, file), os.path.join(BASEDIR, file))
