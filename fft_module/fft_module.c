@@ -57,7 +57,9 @@ static ssize_t fft_compute(const struct Complex *input, struct Complex *output, 
     int i;
 
     printk(KERN_INFO "FFT: executing FFT computation\n");
-    iowrite64(7, 0x090c0000); // TODO we have to understand why this line is crashing everything!
+    
+    iowrite64(0, 0x0); // TODO we have to understand why this line is crashing everything!
+    
 //     for (i = 0; i < len; i+=2) {
 //         printk(KERN_INFO "a\n");
 //         iowrite64(7, FFT_INPUT_START + i * 8); // input[i].real
