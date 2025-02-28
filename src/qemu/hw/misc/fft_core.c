@@ -36,12 +36,12 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 
 
 
+#define STATUS_ID 0x0
+#define IN_START_ID 0x4
+#define IN_END_ID 0x800
+#define OUT_START_ID 0x804
+#define OUT_END_ID 0x1000
 
-#define IN_START_ID 0x0 	//  0      // 0x4000000
-#define IN_END_ID 0X318 	//  792    // 
-#define OUT_START_ID 0x320	//  800    // 0x4000320
-#define OUT_END_ID 0x638	//  1600   // 
-#define STATUS_ID 0x640		//  1602   // 0x4000640
 #define SIZE 8 // number of couple of values (real + imaginary)
 #define INSIZE 32
 

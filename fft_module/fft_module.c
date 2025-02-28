@@ -18,16 +18,13 @@ MODULE_VERSION("1.0");
 #define FFT_BASE_ADDR 0x090c0000
 #define FFT_SIZE 0x1000
 
-#define FFT_INPUT_OFFSET 0x0
-#define FFT_OUTPUT_OFFSET 0x320
-#define FFT_STATUS_OFFSET 0x640
 
 static int majorNumber;
 static struct class* fftClass = NULL;
 static struct device* fftDevice = NULL;
 static void __iomem *fft_base;
 
-static ssize_t fft_compute(const uint64_t *, uint64_t *, size_t);
+static ssize_t fft_compute(const uint64_t *, const uint64_t *, uint64_t *, uint64_t *, size_t);
 static long int fft_ioctl(struct file *, unsigned int, unsigned long);
 
 static struct file_operations fops = {
@@ -43,7 +40,7 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
 
     switch (cmd) {
         case FFT_COMPUTE:
-            fft_compute(data.input, data.output, data.len);
+            fft_compute(data.input, data.inputi, data.output, data.outputi, data.len);
             break;
         default:
             return -EINVAL;
@@ -55,22 +52,22 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
     return 0;
 }
 
-static ssize_t fft_compute(const uint64_t *input, uint64_t *output, size_t len) {
+static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len) {
     int i;
 
     printk(KERN_INFO "FFT: executing FFT computation\n");
 
     for (i = 0; i < len; i++) {
-        iowrite64(input[i], fft_base + FFT_INPUT_OFFSET + i * 8);
+        iowrite64(input[i], fft_base + IN_START_ID + i * 8);
     }
 
-    iowrite32(0x1, fft_base + FFT_STATUS_OFFSET); // Trigger FFT computation
+    iowrite32(0x1, fft_base + STATUS_ID); // Trigger FFT computation
 
     // Wait for computation to finish
-    while (ioread32(fft_base + FFT_STATUS_OFFSET) != 0x5);
+    while (ioread32(fft_base + STATUS_ID) != 0x5);
 
     for (i = 0; i < len; i++) {
-        output[i] = ioread64(fft_base + FFT_OUTPUT_OFFSET + i * 8);
+        output[i] = ioread64(fft_base + OUT_START_ID + i * 8);
     }
 
     return 0;
