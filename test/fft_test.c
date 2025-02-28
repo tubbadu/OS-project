@@ -9,18 +9,19 @@
 int main() {
     int fd;
     struct fft_data data;
-    int i;
 
-    fd = open("/dev/fft", O_RDWR);
+    fd = open("/dev/fft_core", O_RDWR);
+    
     if (fd < 0) {
-        perror("Failed to open /dev/fft");
+        perror("Failed to open /dev/fft_core");
         return EXIT_FAILURE;
     }
 
-    for (i = 0; i < 16; i++) {
-        data.input[i] = i;
+    for (int k = 0; k < 128; k++) {
+        data.input[k].real = 0;
+        data.input[k].imag = 0;
     }
-    data.len = 16;
+    data.len = 128;
 
     // Perform FFT 
     if (ioctl(fd, FFT_COMPUTE, &data) < 0) {
@@ -29,8 +30,8 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    for (i = 0; i < 16; i++) {
-        printf("Output[%d] = %lu\n", i, data.output[i]);
+    for (int k = 0; k < 128; k++) {
+        printf("Output[%d] = %lu\n", k, data.output[k]);
     }
 
     close(fd);

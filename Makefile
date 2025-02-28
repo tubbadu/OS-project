@@ -25,7 +25,7 @@ help:
 # 
 # run-qemu-riscv:
 # 	@echo "Running QEMU RISCV..."
-	bash scripts/start-qemu-riscv.sh
+#	bash scripts/start-qemu-riscv.sh
 
 apply-mods:
 	@echo "Synching files..."
@@ -85,3 +85,5 @@ copy-test:
 # all-riscv: apply-mods build-qemu-riscv  run-qemu-riscv
 
 # all-arm: apply-mods build-qemu-arm build-kernel-module-arm run-qemu-arm
+
+x: apply-mods build-qemu-arm build-kernel-module-arm build-test copy-test run-qemu-arm

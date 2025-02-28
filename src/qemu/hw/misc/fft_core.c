@@ -113,7 +113,7 @@ static void compute_fft(FFTCoreState *s, int size) {
 		s->output[2*k + 1] = (uint64_t) cimag(outvalues[k]);
 	}
 	
-	s->status = 0x6; // finished
+	s->status = 0x5; // finished
 }
 
 
@@ -177,27 +177,27 @@ static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
 
 static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned int size)
 {
-	FFTCoreState *s = opaque;
-	if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
-		s->input[(int)addr/8] = data;
-		return;
-	} else if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
-		s->input[((int)addr-4)/8] |= data << 32;
-		return;
-	} else if(addr == STATUS_ID){
-		if(data == 0x01) {
-			// new data has been written: process it
-			compute_fft(s, SIZE );
-			return;
-		} else 
-			if(data == 0x02) {
-				for(int i=0; i<SIZE; i++){
-					s->output[i] -= s->input[i]; //decrypt(s->input[i], P, Q);
-				}
-				
-				return;
-			}
-	} else s->status = 0x1;
+// 	FFTCoreState *s = opaque;
+// 	if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
+// 		s->input[(int)addr/8] = data;
+// 		return;
+// 	} else if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
+// 		s->input[((int)addr-4)/8] |= data << 32;
+// 		return;
+// 	} else if(addr == STATUS_ID){
+// 		if(data == 0x01) {
+// 			// new data has been written: process it
+// 			compute_fft(s, SIZE );
+// 			return;
+// 		} else 
+// 			if(data == 0x02) {
+// 				for(int i=0; i<SIZE; i++){
+// 					s->output[i] -= s->input[i]; //decrypt(s->input[i], P, Q);
+// 				}
+// 				
+// 				return;
+// 			}
+// 	} else s->status = 0x1;
 }
 
 static const MemoryRegionOps fft_core_ops = {
