@@ -25,7 +25,7 @@ help:
 # 
 # run-qemu-riscv:
 # 	@echo "Running QEMU RISCV..."
-	bash scripts/start-qemu-riscv.sh
+#	bash scripts/start-qemu-riscv.sh
 
 apply-mods:
 	@echo "Synching files..."
