@@ -18,7 +18,8 @@ int main() {
     }
 
     for (i = 0; i < 16; i++) {
-        data.input[i] = i;
+        data.input[i] = 0xf;
+        data.inputi[i] = 0x0;
     }
     data.len = 16;
 
@@ -30,7 +31,8 @@ int main() {
     }
 
     for (i = 0; i < 16; i++) {
-        printf("Output[%d] = %lu\n", i, data.output[i]);
+        printf("Output[%d]  = %lu\n", i, data.output[i]);
+        printf("Outputi[%d] = %lu\n", i, data.outputi[i]);
     }
 
     close(fd);

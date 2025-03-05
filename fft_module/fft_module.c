@@ -57,8 +57,9 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
 
     printk(KERN_INFO "FFT: executing FFT computation\n");
 
-    for (i = 0; i < len; i++) {
-        iowrite64(input[i], fft_base + IN_START_ID + i * 8);
+    for (i = 0; i < len; i+=2) {
+        iowrite64(input[i],  (fft_base + IN_START_ID) + (i+0) * 8);
+        iowrite64(inputi[i], (fft_base + IN_START_ID) + (i+1) * 8);
     }
 
     iowrite32(0x1, fft_base + STATUS_ID); // Trigger FFT computation
@@ -66,8 +67,9 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
     // Wait for computation to finish
     while (ioread32(fft_base + STATUS_ID) != 0x5);
 
-    for (i = 0; i < len; i++) {
-        output[i] = ioread64(fft_base + OUT_START_ID + i * 8);
+    for (i = 0; i < len; i+=2) {
+        output[i]  = ioread64(fft_base + OUT_START_ID + (i+0) * 8);
+        outputi[i] = ioread64(fft_base + OUT_START_ID + (i+1) * 8);
     }
 
     return 0;

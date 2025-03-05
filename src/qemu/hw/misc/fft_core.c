@@ -42,7 +42,7 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 #define OUT_START_ID 0x804
 #define OUT_END_ID 0x1000
 
-#define SIZE 8 // number of couple of values (real + imaginary)
+#define SIZE 16 // number of couple of values (real + imaginary)
 #define INSIZE 32
 
 
@@ -104,14 +104,16 @@ static void compute_fft(FFTCoreState *s, int size) {
 
     for (int k=0; k<SIZE; k++){
         invalues[k].real = (int64_t) s->input[2*k    ];
-        invalues[k].imag = (int64_t) s->input[2*k + 1];
+        invalues[k].imag = (int64_t) s->input[2*k + 1];        
     }
     
     fft(invalues, outvalues, SIZE);
     
     for (int k=0; k<SIZE; k++){
-        s->output[2*k    ] = (uint64_t) outvalues[k].real;
-        s->output[2*k + 1] = (uint64_t) outvalues[k].imag;
+        // s->output[2*k    ] = (uint64_t) outvalues[k].real;
+        // s->output[2*k + 1] = (uint64_t) outvalues[k].imag;
+        s->output[2*k    ] = (uint64_t) invalues[k].real;
+        s->output[2*k + 1] = (uint64_t) invalues[k].imag;
     }
     
     s->status = 0x5; // finished
@@ -159,17 +161,35 @@ static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
 {
     FFTCoreState *s = opaque;
     
-    if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
-        return s->input[(int)addr/8];
-    } if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
-        return s->input[((int)addr-4)/8] >> 32;
-    } else if((int)addr >= OUT_START_ID && (int)addr <= OUT_END_ID && ((int)addr%8 == 0)){
-        return s->output[((int)addr-0x320)/8];
-    } else if((int)addr >= OUT_START_ID && (int)addr <= OUT_END_ID && ((int)addr%8 == 4)){
-        return s->output[((int)addr-0x324)/8] >> 32;
-    } else if((int)addr == STATUS_ID){
+    // if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
+    //     return s->input[(int)addr/8];
+    // } if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
+    //     return s->input[((int)addr-4)/8] >> 32;
+    // } else if((int)addr >= OUT_START_ID && (int)addr <= OUT_END_ID && ((int)addr%8 == 0)){
+    //     return s->output[((int)addr-0x320)/8];
+    // } else if((int)addr >= OUT_START_ID && (int)addr <= OUT_END_ID && ((int)addr%8 == 4)){
+    //     return s->output[((int)addr-0x324)/8] >> 32;
+    // } else if((int)addr == STATUS_ID){
+    //     return s->status;
+    // } 
+    
+    int addri = (int)addr;
+    
+    if(addri == STATUS_ID){
         return s->status;
-    } 
+    } else if(IN_START_ID <= addri && addri <= IN_END_ID){
+        if(addri % 8 == 0){
+            return s->input[addri - IN_START_ID];
+        } else if(addri % 8 == 4){
+            return s->input[addri - IN_START_ID] >> 32;
+        } else return 0xDEADBEEF;
+    } else if(OUT_START_ID <= addri && addri <= OUT_END_ID){
+        if(addri % 8 == 0){
+            return s->output[addri - OUT_START_ID];
+        } else if(addri % 8 == 4){
+            return s->output[addri - OUT_START_ID] >> 32;
+        } else return 0xDEADBEEF;
+    }
     
     else return 0xDEADBEEF;
     
@@ -178,26 +198,55 @@ static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
 static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned int size)
 {
     FFTCoreState *s = opaque;
-    if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
-        s->input[(int)addr/8] = data;
-        return;
-    } else if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
-        s->input[((int)addr-4)/8] |= data << 32;
-        return;
-    } else if(addr == STATUS_ID){
-        if(data == 0x01) {
-            // new data has been written: process it
+    int addri = (int)addr;
+    
+//     if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
+//         s->input[(int)addr/8] = data;
+//         return;
+//     } else if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
+//         s->input[((int)addr-4)/8] |= data << 32;
+//         return;
+//     } else if(addr == STATUS_ID){
+//         if(data == 0x01) {
+//             // new data has been written: process it
+//             compute_fft( s, SIZE );
+//             return;
+//         } else 
+//             if(data == 0x02) {
+//                 for(int i=0; i<SIZE; i++){
+//                     s->output[i] -= s->input[i]; //decrypt(s->input[i], P, Q);
+//                 }
+//                 
+//                 return;
+//             }
+//     } else s->status = 0x1;
+    
+    
+    
+    if(addri == STATUS_ID){
+        if(data == 0x1){
+            // start the conversion
             compute_fft( s, SIZE );
             return;
-        } else 
-            if(data == 0x02) {
-                for(int i=0; i<SIZE; i++){
-                    s->output[i] -= s->input[i]; //decrypt(s->input[i], P, Q);
-                }
-                
-                return;
-            }
-    } else s->status = 0x1;
+        } else {
+            s->status = 0xF; // 0xF = error
+        }
+    } else if(IN_START_ID <= addri && addri <= IN_END_ID){
+        if(addri % 8 == 0){
+            s->input[addri - IN_START_ID] = data;
+        } else if(addri % 8 == 4){
+            s->input[addri - IN_START_ID] |= data << 32;
+        } 
+    } else if(OUT_START_ID <= addri && addri <= OUT_END_ID){
+        if(addri % 8 == 0){
+            s->output[addri - OUT_START_ID] = data;
+        } else if(addri % 8 == 4){
+            s->output[addri - OUT_START_ID] |= data << 32;
+        } 
+    } else {
+        s->status = 0xF; // 0xF = error
+    }
+    
 }
 
 static const MemoryRegionOps fft_core_ops = {
