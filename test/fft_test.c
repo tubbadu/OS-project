@@ -35,8 +35,8 @@ int main() {
     for (i = 0; i < SIZE; i++) {
         // printf("Output[%d]  = %lu\n", i, data.output[i]);
         // printf("Outputi[%d] = %lu\n", i, data.outputi[i]);
-        printf(" input[%d] = 0x%X + j*0x%X\n", i, data.input[i], data.inputi[i]);
-        printf("output[%d] = 0x%X + j*0x%X\n", i, data.output[i], data.outputi[i]);
+        // printf(" input[%d] = 0x%X + j*0x%X\n", i, data.input[i], data.inputi[i]);
+        printf("output[%d] = %ld + j*%ld \n", i, data.output[i], data.outputi[i]);
     }
 
     close(fd);

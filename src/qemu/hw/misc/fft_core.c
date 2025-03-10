@@ -99,27 +99,27 @@ static void fft(Complex *, Complex *, int);
 
 
 static void compute_fft(FFTCoreState *s, int size) {
-//     Complex invalues [SIZE];
-//     Complex outvalues[SIZE];
-// 
-//     for (int k=0; k<SIZE; k++){
-//         qemu_log("qemu_log: data[%d] = %lu + j*%lu\n", k, (int64_t)s->input[2*k    ], (int64_t)s->input[2*k + 1]);
-//         invalues[k].real = (int64_t) s->input[2*k    ];
-//         invalues[k].imag = (int64_t) s->input[2*k + 1];
-//     }
-//     
-//     // fft(invalues, outvalues, SIZE);
-//     
-//     for (int k=0; k<SIZE; k++){
-//         // s->output[2*k    ] = (uint64_t) outvalues[k].real;
-//         // s->output[2*k + 1] = (uint64_t) outvalues[k].imag;
-//         s->output[2*k    ] = s->input[2*k    ]; //(uint64_t) invalues[k].real;
-//         s->output[2*k + 1] = s->input[2*k + 1]; //(uint64_t) invalues[k].imag;
-//     }
-    
-    for(int i=0; i<2*SIZE; i++){
-        s->output[i] = s->input[i];
+    Complex invalues [SIZE];
+    Complex outvalues[SIZE];
+
+    for (int k=0; k<SIZE; k++){
+        // qemu_log("qemu_log: data[%d] = %lu + j*%lu\n", k, (int64_t)s->input[2*k    ], (int64_t)s->input[2*k + 1]);
+        invalues[k].real = (int64_t) s->input[2*k    ];
+        invalues[k].imag = (int64_t) s->input[2*k + 1];
     }
+    
+    fft(invalues, outvalues, SIZE);
+    
+    for (int k=0; k<SIZE; k++){
+        s->output[2*k    ] = (uint64_t) outvalues[k].real;
+        s->output[2*k + 1] = (uint64_t) outvalues[k].imag;
+        // s->output[2*k    ] = s->input[2*k    ]; //(uint64_t) invalues[k].real;
+        // s->output[2*k + 1] = s->input[2*k + 1]; //(uint64_t) invalues[k].imag;
+    }
+    
+    // for(int i=0; i<2*SIZE; i++){
+    //     s->output[i] = s->input[i];
+    // }
     
     s->status = 0x5; // finished
 }
@@ -176,22 +176,22 @@ static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
     } else if(IN_START_ID <= addri && addri <= IN_END_ID){
         if(addri % 8 == 0){
             ret = s->input[ (addri - IN_START_ID) / 8 ];
-            qemu_log("read: i = %d\n", (addri - IN_START_ID)/8);
+            // qemu_log("read: i = %d\n", (addri - IN_START_ID)/8);
         } else if(addri % 8 == 4){
             ret = s->input[ (addri - IN_START_ID - 4) / 8 ] >> 32;
-            qemu_log("read: i = %d, >> 32\n", (addri - IN_START_ID - 4)/8);
+            // qemu_log("read: i = %d, >> 32\n", (addri - IN_START_ID - 4)/8);
         } else ret = 0xDEADBEEF;
     } else if(OUT_START_ID <= addri && addri <= OUT_END_ID){
         if(addri % 8 == 0){
             ret = s->output[ (addri - OUT_START_ID) / 8 ];
-            qemu_log("read: i = %d\n", addri/8);
+            // qemu_log("read: i = %d\n", addri/8);
         } else if(addri % 8 == 4){
             ret = s->output[ (addri - OUT_START_ID - 4) / 8 ] >> 32;
-            qemu_log("read: i = %d, >> 32\n", (addri - OUT_START_ID - 4)/8);
+            // qemu_log("read: i = %d, >> 32\n", (addri - OUT_START_ID - 4)/8);
         } else ret = 0xDEADBEEF;
     } else ret = 0xDEADBEEF;
     
-    qemu_log("READ:  address = 0x%X, data = 0x%X, size = %d\n", addri, ret, size);
+    // qemu_log("READ:  address = 0x%X, data = 0x%X, size = %d\n", addri, ret, size);
     return ret;
 }
 
@@ -200,7 +200,7 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
     FFTCoreState *s = opaque;
     int addri = (int)addr;
     
-    qemu_log("WRITE: address = 0x%X, data = 0x%X, size = %d\n", addri, data, size);
+    // qemu_log("WRITE: address = 0x%X, data = 0x%X, size = %d\n", addri, data, size);
     
     if(addri == STATUS_ID){
         if(data == 0x1){
@@ -213,10 +213,10 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
     } else if(IN_START_ID <= addri && addri <= IN_END_ID){
         if(addri % 8 == 0){
             s->input[ (addri - IN_START_ID) / 8 ] = data;
-            qemu_log("write: i = %d\n", (addri - IN_START_ID)/8);
+            // qemu_log("write: i = %d\n", (addri - IN_START_ID)/8);
         } else if(addri % 8 == 4){
             s->input[ (addri - IN_START_ID - 4) / 8 ] |= data << 32;
-            qemu_log("write: i = %d, << 32\n", (addri - IN_START_ID - 4)/8);
+            // qemu_log("write: i = %d, << 32\n", (addri - IN_START_ID - 4)/8);
         }  
     } else {
         s->status = 0xF; // 0xF = error

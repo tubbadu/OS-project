@@ -66,7 +66,7 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
         addr_real = (fft_base + IN_START_ID) + addr1;
         addr_imag = (fft_base + IN_START_ID) + addr2;
         
-        printk("fft_compute write64: data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, input[i], inputi[i], addr1 + IN_START_ID, addr2 + IN_START_ID);
+        // printk("fft_compute write64: data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, input[i], inputi[i], addr1 + IN_START_ID, addr2 + IN_START_ID);
         // printk("i = %d computes addresses %lu and %lu and value %d + j%d\n", i, addr1, addr2, input[i], inputi[i]);
         iowrite64(input[i],  addr_real);
         iowrite64(inputi[i], addr_imag);
@@ -76,7 +76,7 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
 
     // Wait for computation to finish // TODO add a sleep or something
     while (ioread32(fft_base + STATUS_ID) != 0x5);
-    printk("fft_compute read32:  data = 0x%X, address: 0x%X\n", fft_base + STATUS_ID);
+    // printk("fft_compute read32:  data = 0x%X, address: 0x%X\n", fft_base + STATUS_ID);
     
     for (i = 0; i < len; i++) {
         addr1 = (2*i + 0) * 8;
@@ -88,7 +88,7 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
         output[i]  = ioread64(addr_real);
         outputi[i] = ioread64(addr_imag);
         
-        printk("fft_compute read64:  data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, output[i], outputi[i], addr1 + OUT_START_ID, addr2 + OUT_START_ID);
+        // printk("fft_compute read64:  data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, output[i], outputi[i], addr1 + OUT_START_ID, addr2 + OUT_START_ID);
         // udelay(1000);
     }
 
