@@ -7,18 +7,19 @@
 #define FFT_k 0xFF
 #define FFT_COMPUTE _IOWR(FFT_k, 1, struct fft_data *)
 
+#define SIZE 128
 
 
 #define BASEADDRESS 0x090c0000
 #define STATUS_ID 0x0
-#define IN_START_ID 0x4
-#define IN_END_ID 0x800
-#define OUT_START_ID 0x804
-#define OUT_END_ID 0x1000
+#define IN_START_ID 0x8
+#define IN_END_ID 0x808
+#define OUT_START_ID 0x810 // TODO check if the boundaries can be shrinked
+#define OUT_END_ID 0x1010
 
 #define FFT_INPUT_START BASEADDRESS + IN_START_ID
 #define FFT_OUTPUT_START BASEADDRESS + OUT_START_ID
-#define FFT_BUF_LENGTH 16 // in uint64_t cells
+#define FFT_BUF_LENGTH SIZE // in uint64_t cells
 #define FFT_STATUS_ID BASEADDRESS + STATUS_ID
 
 typedef struct {

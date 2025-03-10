@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include "../fft_module/fft_module.h"
 
+
+
 int main() {
     int fd;
     struct fft_data data;
@@ -17,11 +19,11 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    for (i = 0; i < 16; i++) {
-        data.input[i] = 0xf;
-        data.inputi[i] = 0x0;
+    for (i = 0; i < SIZE; i++) {
+        data.input[i] = i;
+        data.inputi[i] = i+0x1000;
     }
-    data.len = 16;
+    data.len = SIZE;
 
     // Perform FFT 
     if (ioctl(fd, FFT_COMPUTE, &data) < 0) {
@@ -30,9 +32,11 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    for (i = 0; i < 16; i++) {
-        printf("Output[%d]  = %lu\n", i, data.output[i]);
-        printf("Outputi[%d] = %lu\n", i, data.outputi[i]);
+    for (i = 0; i < SIZE; i++) {
+        // printf("Output[%d]  = %lu\n", i, data.output[i]);
+        // printf("Outputi[%d] = %lu\n", i, data.outputi[i]);
+        printf(" input[%d] = 0x%X + j*0x%X\n", i, data.input[i], data.inputi[i]);
+        printf("output[%d] = 0x%X + j*0x%X\n", i, data.output[i], data.outputi[i]);
     }
 
     close(fd);

@@ -37,16 +37,16 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 
 
 #define STATUS_ID 0x0
-#define IN_START_ID 0x4
-#define IN_END_ID 0x800
-#define OUT_START_ID 0x804
-#define OUT_END_ID 0x1000
+#define IN_START_ID 0x8
+#define IN_END_ID 0x808
+#define OUT_START_ID 0x810
+#define OUT_END_ID 0x1010
 
-#define SIZE 16 // number of couple of values (real + imaginary)
+#define SIZE 128 // number of couple of values (real + imaginary)
 #define INSIZE 32
 
 
-#define PI 3.14159265358979323846
+#define PI 3.14159265358979323846 // TODO change this with the constant inside math.h
 
 // #define N 10  // Number of values to process at a time
 
@@ -99,21 +99,26 @@ static void fft(Complex *, Complex *, int);
 
 
 static void compute_fft(FFTCoreState *s, int size) {
-    Complex invalues [SIZE];
-    Complex outvalues[SIZE];
-
-    for (int k=0; k<SIZE; k++){
-        invalues[k].real = (int64_t) s->input[2*k    ];
-        invalues[k].imag = (int64_t) s->input[2*k + 1];        
-    }
+//     Complex invalues [SIZE];
+//     Complex outvalues[SIZE];
+// 
+//     for (int k=0; k<SIZE; k++){
+//         qemu_log("qemu_log: data[%d] = %lu + j*%lu\n", k, (int64_t)s->input[2*k    ], (int64_t)s->input[2*k + 1]);
+//         invalues[k].real = (int64_t) s->input[2*k    ];
+//         invalues[k].imag = (int64_t) s->input[2*k + 1];
+//     }
+//     
+//     // fft(invalues, outvalues, SIZE);
+//     
+//     for (int k=0; k<SIZE; k++){
+//         // s->output[2*k    ] = (uint64_t) outvalues[k].real;
+//         // s->output[2*k + 1] = (uint64_t) outvalues[k].imag;
+//         s->output[2*k    ] = s->input[2*k    ]; //(uint64_t) invalues[k].real;
+//         s->output[2*k + 1] = s->input[2*k + 1]; //(uint64_t) invalues[k].imag;
+//     }
     
-    fft(invalues, outvalues, SIZE);
-    
-    for (int k=0; k<SIZE; k++){
-        // s->output[2*k    ] = (uint64_t) outvalues[k].real;
-        // s->output[2*k + 1] = (uint64_t) outvalues[k].imag;
-        s->output[2*k    ] = (uint64_t) invalues[k].real;
-        s->output[2*k + 1] = (uint64_t) invalues[k].imag;
+    for(int i=0; i<2*SIZE; i++){
+        s->output[i] = s->input[i];
     }
     
     s->status = 0x5; // finished
@@ -127,10 +132,10 @@ static void fft(Complex *input, Complex *output, int n) {
         return;
     }
     
-    Complex *evenInput = (Complex *)malloc(n / 2 * sizeof(Complex));
-    Complex *oddInput = (Complex *)malloc(n / 2 * sizeof(Complex));
+    Complex *evenInput  = (Complex *)malloc(n / 2 * sizeof(Complex));
+    Complex *oddInput   = (Complex *)malloc(n / 2 * sizeof(Complex));
     Complex *evenOutput = (Complex *)malloc(n / 2 * sizeof(Complex));
-    Complex *oddOutput = (Complex *)malloc(n / 2 * sizeof(Complex));
+    Complex *oddOutput  = (Complex *)malloc(n / 2 * sizeof(Complex));
     
     for (int i = 0; i < n / 2; i++) {
         evenInput[i] = input[i * 2];
@@ -160,39 +165,34 @@ static void fft(Complex *input, Complex *output, int n) {
 static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
 {
     FFTCoreState *s = opaque;
-    
-    // if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
-    //     return s->input[(int)addr/8];
-    // } if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
-    //     return s->input[((int)addr-4)/8] >> 32;
-    // } else if((int)addr >= OUT_START_ID && (int)addr <= OUT_END_ID && ((int)addr%8 == 0)){
-    //     return s->output[((int)addr-0x320)/8];
-    // } else if((int)addr >= OUT_START_ID && (int)addr <= OUT_END_ID && ((int)addr%8 == 4)){
-    //     return s->output[((int)addr-0x324)/8] >> 32;
-    // } else if((int)addr == STATUS_ID){
-    //     return s->status;
-    // } 
-    
+
     int addri = (int)addr;
+    uint64_t ret;
+    
+    // qemu_log("addri = %d, reminder = %d, size = %d\n", addri, addri % 8, size);
     
     if(addri == STATUS_ID){
-        return s->status;
+        ret = s->status;
     } else if(IN_START_ID <= addri && addri <= IN_END_ID){
         if(addri % 8 == 0){
-            return s->input[addri - IN_START_ID];
+            ret = s->input[ (addri - IN_START_ID) / 8 ];
+            qemu_log("read: i = %d\n", (addri - IN_START_ID)/8);
         } else if(addri % 8 == 4){
-            return s->input[addri - IN_START_ID] >> 32;
-        } else return 0xDEADBEEF;
+            ret = s->input[ (addri - IN_START_ID - 4) / 8 ] >> 32;
+            qemu_log("read: i = %d, >> 32\n", (addri - IN_START_ID - 4)/8);
+        } else ret = 0xDEADBEEF;
     } else if(OUT_START_ID <= addri && addri <= OUT_END_ID){
         if(addri % 8 == 0){
-            return s->output[addri - OUT_START_ID];
+            ret = s->output[ (addri - OUT_START_ID) / 8 ];
+            qemu_log("read: i = %d\n", addri/8);
         } else if(addri % 8 == 4){
-            return s->output[addri - OUT_START_ID] >> 32;
-        } else return 0xDEADBEEF;
-    }
+            ret = s->output[ (addri - OUT_START_ID - 4) / 8 ] >> 32;
+            qemu_log("read: i = %d, >> 32\n", (addri - OUT_START_ID - 4)/8);
+        } else ret = 0xDEADBEEF;
+    } else ret = 0xDEADBEEF;
     
-    else return 0xDEADBEEF;
-    
+    qemu_log("READ:  address = 0x%X, data = 0x%X, size = %d\n", addri, ret, size);
+    return ret;
 }
 
 static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned int size)
@@ -200,28 +200,7 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
     FFTCoreState *s = opaque;
     int addri = (int)addr;
     
-//     if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 0)){
-//         s->input[(int)addr/8] = data;
-//         return;
-//     } else if((int)addr >= IN_START_ID && (int)addr <= IN_END_ID && ((int)addr%8 == 4)){
-//         s->input[((int)addr-4)/8] |= data << 32;
-//         return;
-//     } else if(addr == STATUS_ID){
-//         if(data == 0x01) {
-//             // new data has been written: process it
-//             compute_fft( s, SIZE );
-//             return;
-//         } else 
-//             if(data == 0x02) {
-//                 for(int i=0; i<SIZE; i++){
-//                     s->output[i] -= s->input[i]; //decrypt(s->input[i], P, Q);
-//                 }
-//                 
-//                 return;
-//             }
-//     } else s->status = 0x1;
-    
-    
+    qemu_log("WRITE: address = 0x%X, data = 0x%X, size = %d\n", addri, data, size);
     
     if(addri == STATUS_ID){
         if(data == 0x1){
@@ -233,20 +212,16 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
         }
     } else if(IN_START_ID <= addri && addri <= IN_END_ID){
         if(addri % 8 == 0){
-            s->input[addri - IN_START_ID] = data;
+            s->input[ (addri - IN_START_ID) / 8 ] = data;
+            qemu_log("write: i = %d\n", (addri - IN_START_ID)/8);
         } else if(addri % 8 == 4){
-            s->input[addri - IN_START_ID] |= data << 32;
-        } 
-    } else if(OUT_START_ID <= addri && addri <= OUT_END_ID){
-        if(addri % 8 == 0){
-            s->output[addri - OUT_START_ID] = data;
-        } else if(addri % 8 == 4){
-            s->output[addri - OUT_START_ID] |= data << 32;
-        } 
+            s->input[ (addri - IN_START_ID - 4) / 8 ] |= data << 32;
+            qemu_log("write: i = %d, << 32\n", (addri - IN_START_ID - 4)/8);
+        }  
     } else {
         s->status = 0xF; // 0xF = error
+        qemu_log("WRITE ERROR!\n");
     }
-    
 }
 
 static const MemoryRegionOps fft_core_ops = {
@@ -260,7 +235,7 @@ static void fft_core_instance_init(Object *obj)
     FFTCoreState *s = FFT_CORE(obj);
     
     /* allocate memory map region */
-    memory_region_init_io(&s->iomem, obj, &fft_core_ops, s, TYPE_FFT_CORE, 0x1000);
+    memory_region_init_io(&s->iomem, obj, &fft_core_ops, s, TYPE_FFT_CORE, 0x2000); // TODO change with a define
     sysbus_init_mmio(SYS_BUS_DEVICE(obj), &s->iomem);
 }
 
