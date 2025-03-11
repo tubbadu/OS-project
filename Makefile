@@ -76,7 +76,7 @@ build-kernel-module-arm:
 
 build-test:
 	@echo "Building kernel module test..."
-	bash scripts/build-fft-test.sh
+	bash scripts/build-fft-test.sh fft_test
 
 copy-test:
 	@echo "Copying test executable to root filesystem..."

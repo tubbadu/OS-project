@@ -22,10 +22,10 @@
 #define FFT_BUF_LENGTH SIZE // in uint64_t cells
 #define FFT_STATUS_ID BASEADDRESS + STATUS_ID
 
-typedef struct {
-    int64_t real;
-    int64_t imag;
-} Complex;
+// typedef struct {
+//     int64_t real;
+//     int64_t imag;
+// } Complex;
 
 struct fft_data {
     uint64_t input[FFT_BUF_LENGTH];
