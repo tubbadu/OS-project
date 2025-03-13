@@ -8,6 +8,6 @@ buildroot-riscv*
 .directory
 .hidden
 .env
-fft_module.ko.bak2
+fft_module.ko.bak*
 
 !src/*
