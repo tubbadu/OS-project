@@ -29,8 +29,8 @@ int reverse(int N, int n) {
 }
 
 /* Riordina l’array in ordine "bit-reversed" */
-void ordina(double complex *f1, int N) {
-	double complex *f2 = malloc(sizeof(double complex) * N);
+void ordina(float complex *f1, int N) {
+	float complex *f2 = malloc(sizeof(float complex) * N);
 	int i, j;
 	for(i = 0; i < N; i++) {
 		f2[i] = f1[reverse(N, i)];
@@ -40,10 +40,10 @@ void ordina(double complex *f1, int N) {
 }
 
 /* Calcola la trasformata FFT in-place */
-void transform(double complex *f, int N) {
+void transform(float complex *f, int N) {
 	ordina(f, N);
-	double complex *W;
-	W = (double complex *)malloc((N / 2) * sizeof(double complex));
+	float complex *W;
+	W = (float complex *)malloc((N / 2) * sizeof(float complex));
 	if(W == NULL) {
 		fprintf(stderr, "Errore nell'allocazione della memoria\n");
 		exit(EXIT_FAILURE);
@@ -63,10 +63,10 @@ void transform(double complex *f, int N) {
 	for(j = 0; j < L; j++) {
 		for(i = 0; i < N; i++) {
 			if ((i & n) == 0) {
-				double complex temp = f[i];
+				float complex temp = f[i];
 				/* Calcola l'indice per il fattore di rotazione */
 				int idx = (i * a) % (n * a);
-				double complex Temp = W[idx] * f[i + n];
+				float complex Temp = W[idx] * f[i + n];
 				f[i] = temp + Temp;
 				f[i + n] = temp - Temp;
 			}
@@ -78,7 +78,7 @@ void transform(double complex *f, int N) {
 }
 
 /* Calcola la FFT e moltiplica ogni risultato per il passo di campionamento */
-void FFT(double complex *f, int N, double d) {
+void FFT(float complex *f, int N, float d) {
 	transform(f, N);
 	int i;
 	for(i = 0; i < N; i++)
@@ -86,7 +86,7 @@ void FFT(double complex *f, int N, double d) {
 }
 
 
-double modulo(complex double num){
+float modulo(complex float num){
 	return sqrt(pow(creal(num),2) + pow(cimag(num),2));
 }
 
@@ -105,7 +105,7 @@ int getNSAMPLES(int nlines){
 // int main() {
 // 	// int n = NSAMPLES;
 // 
-// 	double d = 1;
+// 	float d = 1;
 // 
 // 	
 // 	
@@ -117,7 +117,7 @@ int getNSAMPLES(int nlines){
 // 	// FILE* fd=fopen("sinusoide_2093hz.csv","r");
 // 	FILE* output_fd=fopen("output.csv","w+");
 // 
-// 	double temp;
+// 	float temp;
 // 	int nlines = 0;
 // 	while(fscanf(fd,"%lf",&temp) > 0){
 // 		nlines++;
@@ -127,7 +127,7 @@ int getNSAMPLES(int nlines){
 // 	const int NSAMPLES = getNSAMPLES(nlines);
 // 	printf("file length:  %d\n", nlines);
 // 	printf("input length: %d\n", NSAMPLES);
-// 	double complex *vec = malloc(sizeof(double complex) * NSAMPLES);
+// 	float complex *vec = malloc(sizeof(float complex) * NSAMPLES);
 // 	
 // 	rewind(fd); // put cursor back at the beginning of the file
 // 	
@@ -136,7 +136,7 @@ int getNSAMPLES(int nlines){
 // 		return 1;
 // 	}
 // 	for(int i=0;i<nlines;i++){
-// 		double temp, re, im;
+// 		float temp, re, im;
 // 		fscanf(fd,"%lf\n",&re);
 // 		im = 0;
 // 		vec[i] = re + im * I;

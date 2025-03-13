@@ -5,86 +5,25 @@
 #include <sys/ioctl.h>
 #include <stdint.h>
 #include <math.h>
+#include <complex.h>
 #include "../fft_module/fft_module.h"
+#include "../fftlib/fft_algorithm.h"
+
+#define floatoint *(uint64_t*)&
+#define inttofloat *(double*)&
 
 #define NUM_COMPLEX_VALUES 128
 #define NUM_VALUES (NUM_COMPLEX_VALUES * 2)
 
-typedef struct {
-	int64_t real;
-	int64_t imag;
-} Complex;
 
-// void fft(Complex *v, int n, Complex *tmp) {
-// 	if (n > 1) {
-// 		int k, m;    
-// 		Complex z, w, *vo, *ve;
-// 		ve = tmp; 
-// 		vo = tmp + n/2;
-// 		for (k = 0; k < n/2; k++) {
-// 			ve[k] = v[2*k];
-// 			vo[k] = v[2*k + 1];
-// 		}
-// 		fft(ve, n/2, v);
-// 		fft(vo, n/2, v);
-// 		for (m = 0; m < n/2; m++) {
-// 			w.real = cos(2 * M_PI * m / (int64_t)n);
-// 			w.imag = -sin(2 * M_PI * m / (int64_t)n);
-// 			z.real = w.real * vo[m].real - w.imag * vo[m].imag;
-// 			z.imag = w.real * vo[m].imag + w.imag * vo[m].real; 
-// 			v[m    ].real = ve[m].real + z.real;
-// 			v[m    ].imag = ve[m].imag + z.imag;
-// 			v[m+n/2].real = ve[m].real - z.real;
-// 			v[m+n/2].imag = ve[m].imag - z.imag;
-// 		}
-// 	}
-// 	else {
-// 		return;
-// 	}
-// }
 
-static void fft(Complex *input, Complex *output, int n) {
-	if (n <= 1) {
-		output[0] = input[0];
-		return;
-	}
-	
-	Complex *evenInput  = (Complex *)malloc(n / 2 * sizeof(Complex));
-	Complex *oddInput   = (Complex *)malloc(n / 2 * sizeof(Complex));
-	Complex *evenOutput = (Complex *)malloc(n / 2 * sizeof(Complex));
-	Complex *oddOutput  = (Complex *)malloc(n / 2 * sizeof(Complex));
-	
-	for (int i = 0; i < n / 2; i++) {
-		evenInput[i] = input[i * 2];
-		oddInput[i] = input[i * 2 + 1];
-	}
-	
-	fft(evenInput, evenOutput, n / 2);
-	fft(oddInput, oddOutput, n / 2);
-	
-	for (int k = 0; k < n / 2; k++) {
-		double angle = -2.0 * M_PI * k / n;
-		Complex t = { (int64_t)(cos(angle) * oddOutput[k].real - sin(angle) * oddOutput[k].imag),
-			(int64_t)(cos(angle) * oddOutput[k].imag + sin(angle) * oddOutput[k].real) };
-			output[k].real = evenOutput[k].real + t.real;
-			output[k].imag = evenOutput[k].imag + t.imag;
-			output[k + n / 2].real = evenOutput[k].real - t.real;
-			output[k + n / 2].imag = evenOutput[k].imag - t.imag;
-	}
-	
-	free(evenInput);
-	free(oddInput);
-	free(evenOutput);
-	free(oddOutput);
-}
 
-void generate_expected_output(struct fft_data *data, Complex *output, size_t len) {
-	Complex v[NUM_COMPLEX_VALUES]; //, tmp[NUM_COMPLEX_VALUES];
-	for (size_t i = 0; i < NUM_COMPLEX_VALUES; i++) {
-		v[i].real = data->input[i];
-		v[i].imag = data->inputi[i];
+void generate_expected_output(struct fft_data *data, double complex *output, size_t len) {
+	for (int k=0; k<NUM_COMPLEX_VALUES; k++){
+		output[k] = inttofloat data->input[k] + I * inttofloat data->inputi[k];
 	}
-	fft(v, output, NUM_COMPLEX_VALUES);
+	
+	FFT(output, NUM_COMPLEX_VALUES, 1);
 }
 
 char getsign(int64_t x){
@@ -95,20 +34,22 @@ char getsign(int64_t x){
 	}
 }
 
-int printComplex(int64_t real, int64_t imag){
+int printComplex(double real, double imag){
 	char sign = '+';
 
 	if(imag < 0){
 		sign = '-';
 	}
 	
-	return printf("%ld %c j * %ld", real, sign, abs(imag));
+	return printf("%lf %c j %lf", real, sign, fabs(imag));
 }
 
 int main() {
+	printf("test>>> %d\n", sizeof(double));
+	
 	int fd;
 	struct fft_data data;
-	Complex expected_output[NUM_COMPLEX_VALUES];
+	double complex expected_output[NUM_COMPLEX_VALUES];
 	int i;
 	
 	fd = open("/dev/fft", O_RDWR);
@@ -118,8 +59,12 @@ int main() {
 	}
 	
 	for (i = 0; i < NUM_COMPLEX_VALUES; i++) {
-		data.input[i]  = 2*i; // Real
-		data.inputi[i] = i+0x1000; // Complex
+		double input, inputi;
+		input = i*0.75;
+		inputi= i*0.25;
+		
+		data.input[i]  = floatoint input; // real
+		data.inputi[i] = floatoint inputi; // complex
 	}
 	data.len = NUM_COMPLEX_VALUES;
 	
@@ -131,17 +76,24 @@ int main() {
 		return EXIT_FAILURE;
 	}
 	
+	
+	
+
+	
 	int test_pass = 1;
 	for (i = 0; i < NUM_COMPLEX_VALUES; i++) {
-		// printf("Index %d: Expected = %ld + j*%ld, Actual = %ld %c j*%ld\n", i, expected_output[i].real, expected_output[i].imag, data.output[i], getsign(data.outputi[i]), abs(data.outputi[i]));
+		double expecteda, expectedb;
+		expecteda = creal(expected_output[i]);
+		expectedb = cimag(expected_output[i]);
+		
 		printf("Index %d: \t Expected = ", i);
-		printComplex(expected_output[i].real, expected_output[i].imag);
+		printComplex(expecteda, expectedb);
 		printf(",\t Actual = ");
-		printComplex(data.output[i], data.outputi[i]);
-		printf("\n");
-		if (data.output[i] != expected_output[i].real || data.outputi[i] != expected_output[i].imag) {
+		printComplex(inttofloat data.output[i], inttofloat data.outputi[i]);
+		printf("\ndifference: %lf, %lf\n", fabs(inttofloat data.output[i] - expecteda), fabs(inttofloat data.outputi[i] - expectedb));
+		if (inttofloat data.output[i] != expecteda || inttofloat data.outputi[i] != expectedb) {
 			test_pass = 0;
-			break;
+			// break;
 		}
 	}
 

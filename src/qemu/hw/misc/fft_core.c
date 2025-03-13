@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <complex.h>
+
 #include "qemu/typedefs.h"
 
 
@@ -21,6 +23,7 @@
 #include "hw/irq.h"
 #include "hw/arm/fdt.h"
 #include "sysemu/device_tree.h"
+#include "../../../fftlib/fft_algorithm.h"
 
 
 #define TYPE_FFT_CORE "fft_core"
@@ -41,6 +44,9 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 #define IN_END_ID 0x808
 #define OUT_START_ID 0x810
 #define OUT_END_ID 0x1010
+
+#define floatoint *(uint64_t*)&
+#define inttofloat *(double*)&
 
 #define SIZE 128 // number of couple of values (real + imaginary)
 #define INSIZE 32
@@ -77,21 +83,10 @@ struct FFTCoreState {
 };
 
 
-typedef struct {
-    int64_t real;
-    int64_t imag;
-} Complex;
 
 
 
 static void compute_fft(FFTCoreState *, int);
-// static void fft(Complex *, Complex *, int);
-// static void fft_recursive(Complex *, Complex *, int, int);
-// static Complex complex_multiply(Complex, Complex);
-// static Complex complex_add(Complex, Complex);
-// static Complex complex_subtract(Complex, Complex);
-// static Complex complex_multiply(Complex, Complex);
-static void fft(Complex *, Complex *, int);
 
 /*************************************************************************************/
 
@@ -99,67 +94,31 @@ static void fft(Complex *, Complex *, int);
 
 
 static void compute_fft(FFTCoreState *s, int size) {
-    Complex invalues [SIZE];
-    Complex outvalues[SIZE];
+    double complex val [SIZE];
+    
+    qemu_log("qemu>>> %d\n", sizeof(double));
 
     for (int k=0; k<SIZE; k++){
-        // qemu_log("qemu_log: data[%d] = %lu + j*%lu\n", k, (int64_t)s->input[2*k    ], (int64_t)s->input[2*k + 1]);
-        invalues[k].real = (int64_t) s->input[2*k    ];
-        invalues[k].imag = (int64_t) s->input[2*k + 1];
+        val[k] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);
     }
     
-    fft(invalues, outvalues, SIZE);
+    FFT(val, SIZE*2, 1);
+    
     
     for (int k=0; k<SIZE; k++){
-        s->output[2*k    ] = (uint64_t) outvalues[k].real;
-        s->output[2*k + 1] = (uint64_t) outvalues[k].imag;
-        // s->output[2*k    ] = s->input[2*k    ]; //(uint64_t) invalues[k].real;
-        // s->output[2*k + 1] = s->input[2*k + 1]; //(uint64_t) invalues[k].imag;
+        double a, b;
+        a = creal(val[k]);
+        b = cimag(val[k]);
+        
+        s->output[2*k    ] = (floatoint a);
+        s->output[2*k + 1] = (floatoint b);
     }
-    
-    // for(int i=0; i<2*SIZE; i++){
-    //     s->output[i] = s->input[i];
-    // }
-    
     s->status = 0x5; // finished
 }
 
 
 
-static void fft(Complex *input, Complex *output, int n) {
-    if (n <= 1) {
-        output[0] = input[0];
-        return;
-    }
-    
-    Complex *evenInput  = (Complex *)malloc(n / 2 * sizeof(Complex));
-    Complex *oddInput   = (Complex *)malloc(n / 2 * sizeof(Complex));
-    Complex *evenOutput = (Complex *)malloc(n / 2 * sizeof(Complex));
-    Complex *oddOutput  = (Complex *)malloc(n / 2 * sizeof(Complex));
-    
-    for (int i = 0; i < n / 2; i++) {
-        evenInput[i] = input[i * 2];
-        oddInput[i] = input[i * 2 + 1];
-    }
-    
-    fft(evenInput, evenOutput, n / 2);
-    fft(oddInput, oddOutput, n / 2);
-    
-    for (int k = 0; k < n / 2; k++) {
-        double angle = -2.0 * PI * k / n;
-        Complex t = { (int64_t)(cos(angle) * oddOutput[k].real - sin(angle) * oddOutput[k].imag),
-            (int64_t)(cos(angle) * oddOutput[k].imag + sin(angle) * oddOutput[k].real) };
-            output[k].real = evenOutput[k].real + t.real;
-            output[k].imag = evenOutput[k].imag + t.imag;
-            output[k + n / 2].real = evenOutput[k].real - t.real;
-            output[k + n / 2].imag = evenOutput[k].imag - t.imag;
-    }
-    
-    free(evenInput);
-    free(oddInput);
-    free(evenOutput);
-    free(oddOutput);
-}
+
 
 /*************************************************************************************/
 static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)

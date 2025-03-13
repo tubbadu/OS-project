@@ -22,16 +22,16 @@ int check(int);
 int reverse(int, int);
 
 /* Riordina l’array in ordine "bit-reversed" */
-void ordina(double complex *, int);
+void ordina(float complex *, int);
 
 /* Calcola la trasformata FFT in-place */
-void transform(double complex *, int);
+void transform(float complex *, int);
 
 /* Calcola la FFT e moltiplica ogni risultato per il passo di campionamento */
-void FFT(double complex *, int, double);
+void FFT(float complex *, int, float);
 
 
-double modulo(complex double);
+float modulo(complex float);
 
 int getNSAMPLES(int);
 
