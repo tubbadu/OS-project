@@ -6,7 +6,7 @@
 
 
 
-const char* recog_note(double frequency){
+const char* recog_note(int frequency){
     int semitone;
     const char *noteNames[] = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
     semitone=round(12*log2(frequency/440));
@@ -21,7 +21,7 @@ const char* recog_note(double frequency){
     }
 }
 
-
+/*
 int main(){
     const char*note;
     double frequency;
@@ -32,4 +32,5 @@ int main(){
     note=recog_note(frequency);
     
     printf("%s", note);
-}
+}   
+*/
