@@ -9,5 +9,5 @@ buildroot-riscv*
 .hidden
 .env
 fft_module.ko.bak*
-
+test/fft_test
 !src/*
