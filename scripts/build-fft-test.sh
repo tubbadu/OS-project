@@ -8,9 +8,9 @@ cd $BASEDIR/test
 CC=${CROSS_COMPILE}gcc
 CFLAGS="-I../kernel"
 
-TARGET=fft_test
+TARGET=$1
 
-${CC} ${CFLAGS} -o ${TARGET} fft_test.c
+${CC} ${CFLAGS} -o ${TARGET} ${TARGET}.c -lm
 
 if [ $? -eq 0 ]; then
     echo "Compilation successful. The binary is named ${TARGET}."

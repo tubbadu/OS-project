@@ -3,7 +3,7 @@
 
 	#include "qom/object.h"
 
-	// #if defined(TARGET_AARCH64)
+	// #if defined(TARGET_AARCH64) // TODO remove all the riscv stuff
 		#include "hw/arm/virt.h"
 		DeviceState *fft_core_create_arm(const VirtMachineState *vms, int);
 	// #else

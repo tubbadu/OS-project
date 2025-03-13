@@ -65,7 +65,7 @@ make help
 5. Build Buildroot (it will take a while):
    
   ```shell
-  make buildroot-build-arm
+  make build-buildroot-arm
   ```
 
 6. Apply the modifications to the source files of QEMU and Buildroot:

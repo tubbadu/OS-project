@@ -5,6 +5,7 @@
 #include <linux/fs.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
+#include <linux/delay.h> // TODO remove
 #include "fft_module.h"
 
 MODULE_LICENSE("GPL");
@@ -16,18 +17,15 @@ MODULE_VERSION("1.0");
 #define CLASS_NAME "fft_class"
 
 #define FFT_BASE_ADDR 0x090c0000
-#define FFT_SIZE 0x1000
+#define FFT_SIZE 0x2000
 
-#define FFT_INPUT_OFFSET 0x0
-#define FFT_OUTPUT_OFFSET 0x320
-#define FFT_STATUS_OFFSET 0x640
 
 static int majorNumber;
 static struct class* fftClass = NULL;
 static struct device* fftDevice = NULL;
 static void __iomem *fft_base;
 
-static ssize_t fft_compute(const uint64_t *, uint64_t *, size_t);
+static ssize_t fft_compute(const uint64_t *, const uint64_t *, uint64_t *, uint64_t *, size_t);
 static long int fft_ioctl(struct file *, unsigned int, unsigned long);
 
 static struct file_operations fops = {
@@ -43,7 +41,7 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
 
     switch (cmd) {
         case FFT_COMPUTE:
-            fft_compute(data.input, data.output, data.len);
+            fft_compute(data.input, data.inputi, data.output, data.outputi, data.len);
             break;
         default:
             return -EINVAL;
@@ -55,22 +53,43 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
     return 0;
 }
 
-static ssize_t fft_compute(const uint64_t *input, uint64_t *output, size_t len) {
+static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len) {
     int i;
 
-    printk(KERN_INFO "FFT: executing FFT computation\n");
+    printk(KERN_INFO "FFT: executing FFT computation with len = %d\n", len);
+    
+    unsigned long addr1, addr2,addr_real, addr_imag;
 
-    for (i = 0; i < len; i++) {
-        iowrite64(input[i], fft_base + FFT_INPUT_OFFSET + i * 8);
+    for (i = 0; i < len; i++) { // TODO add a check on len and split in separate conversion if needed
+        addr1 = (2*i + 0) * 8;
+        addr2 = (2*i + 1) * 8;
+        addr_real = (fft_base + IN_START_ID) + addr1;
+        addr_imag = (fft_base + IN_START_ID) + addr2;
+        
+        // printk("fft_compute write64: data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, input[i], inputi[i], addr1 + IN_START_ID, addr2 + IN_START_ID);
+        // printk("i = %d computes addresses %lu and %lu and value %d + j%d\n", i, addr1, addr2, input[i], inputi[i]);
+        iowrite64(input[i],  addr_real);
+        iowrite64(inputi[i], addr_imag);
     }
+    
+    iowrite32(0x1, fft_base + STATUS_ID); // Trigger FFT computation
 
-    iowrite32(0x1, fft_base + FFT_STATUS_OFFSET); // Trigger FFT computation
-
-    // Wait for computation to finish
-    while (ioread32(fft_base + FFT_STATUS_OFFSET) != 0x5);
-
+    // Wait for computation to finish // TODO add a sleep or something
+    while (ioread32(fft_base + STATUS_ID) != 0x5);
+    // printk("fft_compute read32:  data = 0x%X, address: 0x%X\n", fft_base + STATUS_ID);
+    
     for (i = 0; i < len; i++) {
-        output[i] = ioread64(fft_base + FFT_OUTPUT_OFFSET + i * 8);
+        addr1 = (2*i + 0) * 8;
+        addr2 = (2*i + 1) * 8;
+        addr_real = (fft_base + OUT_START_ID) + addr1;
+        addr_imag = (fft_base + OUT_START_ID) + addr2;
+        
+        // printk("i = %d computes addresses %lu and %lu and value %d + j%d\n", i, addr1, addr2, input[i], inputi[i]);
+        output[i]  = ioread64(addr_real);
+        outputi[i] = ioread64(addr_imag);
+        
+        // printk("fft_compute read64:  data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, output[i], outputi[i], addr1 + OUT_START_ID, addr2 + OUT_START_ID);
+        // udelay(1000);
     }
 
     return 0;

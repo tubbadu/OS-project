@@ -76,7 +76,7 @@ build-kernel-module-arm:
 
 build-test:
 	@echo "Building kernel module test..."
-	bash scripts/build-fft-test.sh
+	bash scripts/build-fft-test.sh fft_test
 
 copy-test:
 	@echo "Copying test executable to root filesystem..."
@@ -85,3 +85,5 @@ copy-test:
 # all-riscv: apply-mods build-qemu-riscv  run-qemu-riscv
 
 # all-arm: apply-mods build-qemu-arm build-kernel-module-arm run-qemu-arm
+
+x: apply-mods build-qemu-arm build-kernel-module-arm build-test copy-test run-qemu-arm
