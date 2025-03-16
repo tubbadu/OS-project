@@ -102,7 +102,7 @@ static void compute_fft(FFTCoreState *s, int size) {
         val[k] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);
     }
     
-    FFT(val, SIZE*2, 1);
+    FFT(val, SIZE, 1); // Why SIZE*2 is needed?
     
     
     for (int k=0; k<SIZE; k++){

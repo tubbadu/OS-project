@@ -8,7 +8,7 @@ cd $BASEDIR/test
 CC=${CROSS_COMPILE}gcc
 CFLAGS="-I../kernel"
 
-TARGET="fft_test"
+TARGET="$1" #"fft_test"
 
 ${CC} ${CFLAGS} -o ${TARGET} ${TARGET}.c ../fftlib/fft_algorithm.c  -lm
 
