@@ -52,14 +52,12 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
     return 0;
 }
 
-static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len) {
-    int i;
 
-    printk(KERN_INFO "FFT: executing FFT computation with len = %d\n", len);
-    
+
+static ssize_t fft_compute_128 (const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len){
     unsigned long addr1, addr2,addr_real, addr_imag;
-
-    for (i = 0; i < len; i++) { // TODO add a check on len and split in separate conversion if needed
+    
+    for (int i = 0; i < len; i++) { 
         addr1 = (2*i + 0) * 8;
         addr2 = (2*i + 1) * 8;
         addr_real = (fft_base + IN_START_ID) + addr1;
@@ -71,13 +69,24 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
         iowrite64(inputi[i], addr_imag);
     }
     
+    // zero padding
+    for (int i = len; i < 128; i++) { 
+        addr1 = (2*i + 0) * 8;
+        addr2 = (2*i + 1) * 8;
+        addr_real = (fft_base + IN_START_ID) + addr1;
+        addr_imag = (fft_base + IN_START_ID) + addr2;
+        
+        iowrite64(0,  addr_real);
+        iowrite64(0, addr_imag);
+    }
+    
     iowrite32(0x1, fft_base + STATUS_ID); // Trigger FFT computation
-
+    
     // Wait for computation to finish // TODO add a sleep or something
     while (ioread32(fft_base + STATUS_ID) != 0x5);
     // printk("fft_compute read32:  data = 0x%X, address: 0x%X\n", fft_base + STATUS_ID);
     
-    for (i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
         addr1 = (2*i + 0) * 8;
         addr2 = (2*i + 1) * 8;
         addr_real = (fft_base + OUT_START_ID) + addr1;
@@ -90,6 +99,44 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
         // printk("fft_compute read64:  data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, output[i], outputi[i], addr1 + OUT_START_ID, addr2 + OUT_START_ID);
         // udelay(1000);
     }
+    return 0;
+}
+
+
+static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len) {
+    printk(KERN_INFO "FFT: executing FFT computation with len = %d\n", len);
+    /*
+     example: len = 400
+       fft_compute_128 (0-127) with size = 128
+       fft_compute_128 (64-191) with size = 128
+       fft_compute_128 (128-255) with size = 128
+       fft_compute_128 (192-319) with size = 128
+       fft_compute_128 (256-384) with size = 128
+       
+       fft_compute_128 (320-448) with size = 80
+     */
+    
+    uint64_t partial_output[128], partial_outputi[128];
+
+    int i;
+    for(i=0; (i+127) < len; i += 64){
+        printk("LOOP: i = %d\n", i);
+        fft_compute_128(
+            &input[i],
+            &inputi[i],
+            partial_output,
+            partial_outputi,
+            128
+        );
+        
+        // add the partial results in the outputs
+        for(int j=0; j<128; j++){
+            output[i+j] = partial_output[j];
+            outputi[i+j] = partial_outputi[j];
+        }
+    }
+    printk("INFO: len = %lu, last i = %d\n", len, i);
+
 
     return 0;
 }
