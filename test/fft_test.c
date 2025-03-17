@@ -12,7 +12,7 @@
 #define floatoint *(uint64_t*)&
 #define inttofloat *(double*)&
 
-#define NUM_COMPLEX_VALUES 128
+#define NUM_COMPLEX_VALUES 64
 #define NUM_VALUES (NUM_COMPLEX_VALUES * 2)
 
 
@@ -45,8 +45,6 @@ int printComplex(double real, double imag){
 }
 
 int main() {
-	printf("test>>> %d\n", sizeof(double));
-	
 	int fd;
 	struct fft_data data;
 	double complex expected_output[NUM_COMPLEX_VALUES];

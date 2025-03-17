@@ -82,41 +82,107 @@ struct FFTCoreState {
     uint64_t status;
 };
 
+enum FFT_State {State1 = 0x1, State2 = 0x2, State3 = 0x3, State4 = 0x4, Finished = 0x5}; // TODO find better names // TODO move to header
 
 
 
 
-static void compute_fft(FFTCoreState *, int);
+static void compute_fft(FFTCoreState *, int, enum FFT_State);
+static void compute_fft_128(FFTCoreState *, enum FFT_State);
 
 /*************************************************************************************/
 
 
 
 
-static void compute_fft(FFTCoreState *s, int size) {
+static void compute_fft_128(FFTCoreState *s, enum FFT_State state) {
     double complex val [SIZE];
     
-    qemu_log("qemu>>> %d\n", sizeof(double));
 
-    for (int k=0; k<SIZE; k++){
-        val[k] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);
+    if(state == State1 || state == State3){
+        for (int k=0; k<SIZE; k++){
+            val[k] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);
+        }
+    } else if(state == State2){
+        // swap the two halves of the input vector
+        for (int k=0; k<SIZE/2; k++){
+            val[k + SIZE/2] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);
+        }
+        for (int k=SIZE/2; k<SIZE; k++){
+            val[k - SIZE/2] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);
+        }
+    } else {
+        // ERROR! TODO add
+        qemu_log("ERROR #1!\n");
+        return;
     }
     
-    FFT(val, SIZE, 1); // Why SIZE*2 is needed?
     
+    FFT(val, SIZE, 1);
+    // now val contains the results of this specific 128 values fft
     
-    for (int k=0; k<SIZE; k++){
-        double a, b;
-        a = creal(val[k]);
-        b = cimag(val[k]);
-        
-        s->output[2*k    ] = (floatoint a);
-        s->output[2*k + 1] = (floatoint b);
+    if(state == State1){
+        // overwrite the output
+        for (int k=0; k<SIZE; k++){
+            double a, b;
+            a = creal(val[k]);
+            b = cimag(val[k]);
+            
+            s->output[2*k    ] = (floatoint a);
+            s->output[2*k + 1] = (floatoint b);
+        }
+    } else if(state == State2){
+        // overwrite second half of val in the first half of output
+        for (int k=0; k<SIZE/2; k++){
+            double a, b;
+            a = creal(val[k + SIZE/2]);
+            b = cimag(val[k + SIZE/2]);
+            
+            s->output[2*k    ] = (floatoint a);
+            s->output[2*k + 1] = (floatoint b);
+        }
+        // add first half of val in the second half of output
+        for (int k=SIZE/2; k<SIZE; k++){
+            double a, b;
+            a = creal(val[k - SIZE/2]) + (inttofloat s->output[2*k    ]);
+            b = cimag(val[k - SIZE/2]) + (inttofloat s->output[2*k + 1]);
+            
+            s->output[2*k    ] = (floatoint a);
+            s->output[2*k + 1] = (floatoint b);
+        }
+    } else if(state == State3){
+        // add first half of val in the first half of output
+        for (int k=0; k<SIZE/2; k++){
+            double a, b;
+            a = creal(val[k]) + (inttofloat s->output[2*k    ]);
+            b = cimag(val[k]) + (inttofloat s->output[2*k + 1]);
+            
+            s->output[2*k    ] = (floatoint a);
+            s->output[2*k + 1] = (floatoint b);
+        }
+        // overwrite second half of val in the second half of output
+        for (int k=SIZE/2; k<SIZE; k++){
+            double a, b;
+            a = creal(val[k]);
+            b = cimag(val[k]);
+            
+            s->output[2*k    ] = (floatoint a);
+            s->output[2*k + 1] = (floatoint b);
+        }
+    } else {
+        // ERROR! TODO add
+        qemu_log("ERROR #2!\n");
+        return;
     }
-    s->status = 0x5; // finished
+
+    s->status = Finished; // finished
 }
 
 
+
+static void compute_fft(FFTCoreState *s, int size, enum FFT_State state) {
+    return compute_fft_128(s, state);
+}
 
 
 
@@ -162,9 +228,9 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
     // qemu_log("WRITE: address = 0x%X, data = 0x%X, size = %d\n", addri, data, size);
     
     if(addri == STATUS_ID){
-        if(data == 0x1){
+        if(0x1 <= data && data <= 0x3){ // if it's an existing operation
             // start the conversion
-            compute_fft( s, SIZE );
+            compute_fft( s, SIZE, data );
             return;
         } else {
             s->status = 0xF; // 0xF = error

@@ -24,13 +24,19 @@ static struct class* fftClass = NULL;
 static struct device* fftDevice = NULL;
 static void __iomem *fft_base;
 
-static ssize_t fft_compute(const uint64_t *, const uint64_t *, uint64_t *, uint64_t *, size_t);
+enum FFT_State {State1 = 0x1, State2 = 0x2, State3 = 0x3, State4 = 0x4, Finished = 0x5}; // TODO find better names // TODO move to header
+
+
+static size_t fft_compute(const uint64_t *, const uint64_t *, uint64_t *, uint64_t *, size_t);
+static size_t fft_compute_128(const uint64_t *, const uint64_t *, uint64_t *, uint64_t *, size_t, size_t, enum FFT_State);
 static long int fft_ioctl(struct file *, unsigned int, unsigned long);
 
 static struct file_operations fops = {
    .owner = THIS_MODULE,
    .unlocked_ioctl = fft_ioctl
 };
+
+
 
 static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
     struct fft_data data;
@@ -52,44 +58,117 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
     return 0;
 }
 
-static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len) {
-    int i;
 
-    printk(KERN_INFO "FFT: executing FFT computation with len = %d\n", len);
-    
+// TODO write functions to write and read in defined intervals!
+
+void fft_write(const uint64_t *input, const uint64_t *inputi, int starti, int endi, int offset){
     unsigned long addr1, addr2,addr_real, addr_imag;
-
-    for (i = 0; i < len; i++) { // TODO add a check on len and split in separate conversion if needed
+    
+    for (int i = starti; i < endi; i++) {
         addr1 = (2*i + 0) * 8;
         addr2 = (2*i + 1) * 8;
         addr_real = (fft_base + IN_START_ID) + addr1;
         addr_imag = (fft_base + IN_START_ID) + addr2;
-        
-        // printk("fft_compute write64: data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, input[i], inputi[i], addr1 + IN_START_ID, addr2 + IN_START_ID);
-        // printk("i = %d computes addresses %lu and %lu and value %d + j%d\n", i, addr1, addr2, input[i], inputi[i]);
-        iowrite64(input[i],  addr_real);
-        iowrite64(inputi[i], addr_imag);
+        printk("w1    \n");
+        iowrite64(input [offset + i], addr_real);
+        printk("w2    \n");
+        iowrite64(inputi[offset + i], addr_imag);
     }
-    
-    iowrite32(0x1, fft_base + STATUS_ID); // Trigger FFT computation
+}
 
-    // Wait for computation to finish // TODO add a sleep or something
-    while (ioread32(fft_base + STATUS_ID) != 0x5);
-    // printk("fft_compute read32:  data = 0x%X, address: 0x%X\n", fft_base + STATUS_ID);
-    
-    for (i = 0; i < len; i++) {
+void fft_read(uint64_t *output, uint64_t *outputi, int starti, int endi, int offset){
+    unsigned long addr1, addr2,addr_real, addr_imag;
+    printk("starti = %d, endi = %d, offset = %d    \n", starti, endi, offset);
+    for (int i = starti; i < endi; i++) {
+        printk("i = %d    \n", i);
         addr1 = (2*i + 0) * 8;
         addr2 = (2*i + 1) * 8;
         addr_real = (fft_base + OUT_START_ID) + addr1;
         addr_imag = (fft_base + OUT_START_ID) + addr2;
-        
-        // printk("i = %d computes addresses %lu and %lu and value %d + j%d\n", i, addr1, addr2, input[i], inputi[i]);
-        output[i]  = ioread64(addr_real);
-        outputi[i] = ioread64(addr_imag);
-        
-        // printk("fft_compute read64:  data[%d] = 0x%X + j*0x%X, addresses: 0x%X, 0x%X\n", i, output[i], outputi[i], addr1 + OUT_START_ID, addr2 + OUT_START_ID);
-        // udelay(1000);
+        printk("r1    \n");
+        output [offset + i] = ioread64(addr_real);
+        printk("r2: %d    \n", offset + i);
+        // outputi[offset + i] = 5;
+        // printk("r2.1    \n");
+        // int pippo = ioread64(addr_imag);
+        // printk("r2.2    \n");
+        outputi[offset + i] = ioread64(addr_imag);
     }
+}
+
+static size_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len) {
+    int i = 0;
+    printk("fft_compute with len = %d    \n", len);
+    fft_compute_128(input, inputi, output, outputi, (len-i), i, State1);
+    
+    i += 128; // because State1 writes 128 values
+    if(i >= len){
+        // read last
+        printk("2    \n");
+        fft_read(output, outputi, 64, 128, 0);
+    } else {
+        while(1){
+            printk("3    \n");
+            fft_compute_128(input, inputi, output, outputi, (len-i), i, State2);
+            i += 64;
+            if(i >= len){
+                // read last TODO check indexes! in this specific case
+                printk("4    \n");
+                fft_read(output, outputi, 0, (len - (i-64)), (i-64));
+                break;
+            }
+            printk("5    \n");
+            fft_compute_128(input, inputi, output, outputi, (len-i), i, State3);
+            i += 64;
+            if(i >= len){
+                // read last TODO check indexes! in this specific case
+                printk("6    \n");
+                fft_read(output, outputi, 0, (len - (i-64)), (i-64));
+                break;
+            }
+        }
+    }
+    printk("7    \n");
+    return 0;
+}
+
+
+
+
+static size_t fft_compute_128(const uint64_t *input, const uint64_t *inputi, uint64_t *output, uint64_t *outputi, size_t len_diff, size_t offset, enum FFT_State state) {
+    // unsigned long addr1, addr2,addr_real, addr_imag;
+    unsigned int starti, endi;
+    
+    if(state == State1){
+        starti = 0;
+        endi = 128;
+    } else if(state == State2){
+        starti = 0;
+        endi = 64;
+    } else if(state == State3){
+        starti = 64;
+        endi = 128;
+    }
+
+    fft_write(input, inputi, starti, endi, offset);
+    
+    
+    iowrite32(state, fft_base + STATUS_ID); // Trigger FFT computation
+
+    // Wait for computation to finish // TODO add a small sleep or something: udelay(1000);
+    while (ioread32(fft_base + STATUS_ID) != Finished); 
+    
+
+    
+    if(state == State1 || state == State3){
+        starti = 0;
+        endi = 64;
+    } else if(state == State2){
+        starti = 64;
+        endi = 128;
+    }
+
+    fft_read(output, outputi, starti, endi, offset);
 
     return 0;
 }
