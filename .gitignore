@@ -9,5 +9,6 @@ buildroot-riscv*
 .hidden
 .env
 fft_module.ko.bak*
+.vscode
 
 !src/*
