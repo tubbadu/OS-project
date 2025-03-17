@@ -1,7 +1,6 @@
 #ifndef FFT_MODULE_H
 #define FFT_MODULE_H
 
-#include <complex.h>
 
 #define DEVICE_NAME "fft"    ///< The device will appear at /dev/fft using this value
 #define CLASS_NAME "fft_class" ///< The device class -- this is a character device driver
@@ -30,8 +29,10 @@
 // } Complex;
 
 struct fft_data {
-    double complex input[FFT_BUF_LENGTH];
-    double complex output[FFT_BUF_LENGTH];
+    double input[FFT_BUF_LENGTH];
+    double output[FFT_BUF_LENGTH];
+    double inputi[FFT_BUF_LENGTH];
+    double outputi[FFT_BUF_LENGTH];
     size_t len;
 };
 

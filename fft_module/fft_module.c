@@ -1,3 +1,5 @@
+// TODO rename input/output as input_real and inputi/outputi as input_imag
+
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -24,7 +26,7 @@ static struct class* fftClass = NULL;
 static struct device* fftDevice = NULL;
 static void __iomem *fft_base;
 
-static ssize_t fft_compute(const double complex *, const double complex *, size_t);
+static ssize_t fft_compute(const double *, const double *, double *, double *, size_t);
 static long int fft_ioctl(struct file *, unsigned int, unsigned long);
 
 static struct file_operations fops = {
@@ -54,7 +56,7 @@ static long int fft_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
 
 
 
-static ssize_t fft_compute_128 (const double complex *input, double complex *output, size_t len){
+static ssize_t fft_compute_128 (const double *input, const double *inputi, double *output, double *outputi, size_t len){
     // TODO convert to uint64_t and back!
 //     unsigned long addr1, addr2,addr_real, addr_imag;
 //     
@@ -104,7 +106,7 @@ static ssize_t fft_compute_128 (const double complex *input, double complex *out
 }
 
 
-static ssize_t fft_compute(const double complex *input, double complex *output, size_t len) {
+static ssize_t fft_compute(const double *input, const double *inputi, double *output, double *outputi, size_t len) {
     printk(KERN_INFO "FFT: executing FFT computation with len = %d\n", len);
     /*
      example: len = 400
@@ -117,7 +119,7 @@ static ssize_t fft_compute(const double complex *input, double complex *output, 
        fft_compute_128 (320-448) with size = 80
      */
     
-    double complex partial_output[128]; //, partial_outputi[128];
+    double partial_output[128], partial_outputi[128]; 
 
     int i;
     for(i=0; (i+127) < len; i += 64){
