@@ -1,9 +1,7 @@
 #include "fftcorelib.h"
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <complex.h>
 #include <math.h>
+#include <stddef.h>
 #include <string.h>
 
 static inline uint64_t double_to_int(double value) {
@@ -18,7 +16,6 @@ static inline double int_to_double(uint64_t value) {
 	return result;
 }
 
-// It computes a 128-point FFT on input and writes the result into output.
 int fft_128(double complex *input, double complex *output){
 	// open device
 	int fd = open("/dev/fft", O_RDWR);
@@ -50,104 +47,55 @@ int fft_128(double complex *input, double complex *output){
 	return 0;
 }
 
-// Helper: Compute next power of two (minimum 128)
-static size_t next_power_of_two(size_t n) {
-	size_t power = 1;
-	while (power < n) {
-		power <<= 1;
-	}
-	return (power < 128) ? 128 : power;
+/********************************************************************/
+
+// Utility function to compute the next power of 2 greater than or equal to N
+size_t next_power_of_2(size_t N) {
+	return pow(2, ceil(log2(N)));
 }
 
-// Recursive FFT function that uses the hardware FFT when N == 128.
-// Assumes N is a power of two and N >= 128.
-static int fft_recursive(double complex *x, double complex *X, size_t N) {
-	if (N == 128) {
-		// Base case: Use the hardware FFT.
-		return fft_128(x, X);
-	}
-	
-	size_t half = N / 2;
-	double complex *even = malloc(half * sizeof(double complex));
-	double complex *odd  = malloc(half * sizeof(double complex));
-	double complex *E    = malloc(half * sizeof(double complex));
-	double complex *O    = malloc(half * sizeof(double complex));
-	if (!even || !odd || !E || !O) {
-		free(even); free(odd); free(E); free(O);
-		return EXIT_FAILURE;
-	}
-	
-	// Split input into even and odd indices.
-	for (size_t i = 0; i < half; i++) {
-		even[i] = x[2 * i];
-		odd[i]  = x[2 * i + 1];
-	}
-	
-	int ret;
-	ret = fft_recursive(even, E, half);
-	if (ret != EXIT_SUCCESS) {
-		free(even); free(odd); free(E); free(O);
-		return ret;
-	}
-	ret = fft_recursive(odd, O, half);
-	if (ret != EXIT_SUCCESS) {
-		free(even); free(odd); free(E); free(O);
-		return ret;
-	}
-	
-	// Combine the FFTs of the even and odd parts.
-	for (size_t k = 0; k < half; k++) {
-		double complex twiddle = cexp(-2.0 * I * M_PI * k / N) * O[k];
-		X[k]         = E[k] + twiddle;
-		X[k + half]  = E[k] - twiddle;
-	}
-	
-	free(even);
-	free(odd);
-	free(E);
-	free(O);
-	return EXIT_SUCCESS;
-}
-
-// Exposed function: Compute FFT for an input of any length.
-// If the input length is not a power-of-two (or is less than 128), the input
-// is zero-padded up to the next power-of-two (with a minimum of 128).
-// The first N output values (corresponding to the original length) are returned.
 int FFTcore(double complex *input, double complex *output, size_t N) {
-	// Determine padded length (next power-of-two, minimum 128).
-	size_t padded_N = next_power_of_two(N);
+	// Find the next power of 2 greater than or equal to N
+	size_t padded_size = next_power_of_2(N);
 	
-	// Allocate temporary buffers.
-	double complex *inbuf = malloc(padded_N * sizeof(double complex));
-	double complex *outbuf = malloc(padded_N * sizeof(double complex));
-	if (!inbuf || !outbuf) {
-		free(inbuf);
-		free(outbuf);
-		return EXIT_FAILURE;
+	// Allocate a temporary array for zero-padding the input
+	double complex *padded_input = (double complex *)malloc(padded_size * sizeof(double complex));
+	if (!padded_input) {
+		return -1;  // Memory allocation failed
 	}
 	
-	// Copy input and pad with zeros.
+	// Copy the input data to the padded array
 	for (size_t i = 0; i < N; i++) {
-		inbuf[i] = input[i];
-	}
-	for (size_t i = N; i < padded_N; i++) {
-		inbuf[i] = 0.0 + 0.0 * I;
+		padded_input[i] = input[i];
 	}
 	
-	// Compute the FFT recursively.
-	int ret = fft_recursive(inbuf, outbuf, padded_N);
-	if (ret != EXIT_SUCCESS) {
-		free(inbuf);
-		free(outbuf);
-		return ret;
+	// Zero pad the rest of the array
+	for (size_t i = N; i < padded_size; i++) {
+		padded_input[i] = 0.0 + 0.0*I;  // Initialize the extra values as zero (complex zero)
 	}
 	
-	// Copy back only the first N results.
+	// Perform the FFT on the padded input
+	double complex *padded_output = (double complex *)malloc(padded_size * sizeof(double complex));
+	if (!padded_output) {
+		free(padded_input);
+		return -1;  // Memory allocation failed
+	}
+	
+	int status = fft_128(padded_input, padded_output);
+	if (status != 0) {
+		free(padded_input);
+		free(padded_output);
+		return -1;  // FFT failed
+	}
+	
+	// Copy the result of the FFT into the output array (of size N)
 	for (size_t i = 0; i < N; i++) {
-		output[i] = outbuf[i];
+		output[i] = padded_output[i];
 	}
 	
-	free(inbuf);
-	free(outbuf);
-	return EXIT_SUCCESS;
+	// Free allocated memory
+	free(padded_input);
+	free(padded_output);
+	
+	return 0;  // Success
 }
