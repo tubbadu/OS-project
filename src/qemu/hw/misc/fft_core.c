@@ -96,7 +96,6 @@ static void compute_fft(FFTCoreState *, int);
 static void compute_fft(FFTCoreState *s, int size) {
     double complex val [SIZE];
     
-    qemu_log("qemu>>> %d\n", sizeof(double));
 
     for (int k=0; k<SIZE; k++){
         val[k] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);

@@ -46,16 +46,13 @@ void transform(double complex* f, int N)     //calcola il vettore trasformato
 	//Prima N/2-1 ma genera errore con ciclo for successivo
 	//in quanto prova a copiare in una zona non allocata "W[N/2-1]"
 	W[1] = polar(1., -2. * M_PI / N);
-	printf("W[1] = (%lf, %lf)\n", creal(W[1]), cimag(W[1]));
 	W[0] = 1;
 	for(int i = 2; i < N / 2; i++)
 		W[i] = cexp(-I * 2. * M_PI * i / N); //pow(W[1], i);
 	int n = 1;
 	int a = N / 2;
 	for(int j = 0; j < ilog2(N); j++) {
-		printf("TANSFORM j = %d\n", j);
 		for(int i = 0; i < N; i++) {
-			printf("TANSFORM i = %d\n", i);
 			if(!(i & n)) {
 				/*ad ogni step di raddoppiamento di n, vengono utilizzati gli indici */
 				/*'i' presi alternativamente a gruppetti di n, una volta si e una no.*/
@@ -80,7 +77,6 @@ void FFT(double complex* f, int N, double d)
 
 double modulo(complex double num){
 	double ret = sqrt(pow(creal(num),2) + pow(cimag(num),2));
-	printf("MODULO: |%lf +j* %f| = %lf\n", creal(num), cimag(num), ret);
 	return ret;
 }
 

@@ -10,7 +10,7 @@ CFLAGS="-I../kernel"
 
 TARGET="$1" #"fft_test"
 
-${CC} ${CFLAGS} -o ${TARGET} ${TARGET}.c ../fftlib/fft_algorithm.c  -lm
+${CC} ${CFLAGS} -o ${TARGET} ${TARGET}.c ../fftlib/fft_algorithm.c lib/fftcorelib.c  -lm
 
 if [ $? -eq 0 ]; then
     echo "Compilation successful. The binary is named ${TARGET}."

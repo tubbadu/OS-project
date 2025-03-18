@@ -21,7 +21,6 @@ int main() {
 		perror("Failed to open file.");
 		return 0;
 	}
-	printf("helo");
 	
 	double temp;
 	int nlines = 0;

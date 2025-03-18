@@ -9,20 +9,17 @@
 #include "../fft_module/fft_module.h"
 #include "../fftlib/fft_algorithm.h"
 
-#define floatoint *(uint64_t*)&
-#define inttofloat *(double*)&
+#include "lib/fftcorelib.h"
 
-#define NUM_COMPLEX_VALUES 128
+#define NUM_COMPLEX_VALUES 256
 #define NUM_VALUES (NUM_COMPLEX_VALUES * 2)
 
 
 
-
-void generate_expected_output(struct fft_data *data, double complex *output, size_t len) {
-	for (int k=0; k<NUM_COMPLEX_VALUES; k++){
-		output[k] = inttofloat data->input[k] + I * inttofloat data->inputi[k];
+void generate_expected_output(double complex *input, double complex *output, size_t len) {
+	for(int i=0; i<len; i++){
+		output[i] = input[i];
 	}
-	
 	FFT(output, NUM_COMPLEX_VALUES, 1);
 }
 
@@ -45,36 +42,24 @@ int printComplex(double real, double imag){
 }
 
 int main() {
-	printf("test>>> %d\n", sizeof(double));
-	
 	int fd;
 	struct fft_data data;
-	double complex expected_output[NUM_COMPLEX_VALUES];
+	double complex expected_output[NUM_COMPLEX_VALUES], input[NUM_COMPLEX_VALUES], output[NUM_COMPLEX_VALUES];
 	int i;
 	
-	fd = open("/dev/fft", O_RDWR);
-	if (fd < 0) {
-		perror("Failed to open /dev/fft");
-		return EXIT_FAILURE;
-	}
-	
 	for (i = 0; i < NUM_COMPLEX_VALUES; i++) {
-		double input, inputi;
-		input = i*0.75;
-		inputi= i*0.25;
+		double preal = i*0.75;
+		double pimag = i*0.25;
 		
-		data.input[i]  = floatoint input; // real
-		data.inputi[i] = floatoint inputi; // complex
+		input[i] = preal + I * pimag;
+		expected_output[i] = input[i];
 	}
+	
+	
 	data.len = NUM_COMPLEX_VALUES;
+	FFT(expected_output, NUM_COMPLEX_VALUES, 1);
 	
-	generate_expected_output(&data, expected_output, data.len);
-	
-	if (ioctl(fd, FFT_COMPUTE, &data) < 0) {
-		perror("Failed to perform FFT computation");
-		close(fd);
-		return EXIT_FAILURE;
-	}
+	FFTcore(input, output, NUM_COMPLEX_VALUES);
 	
 	
 	
@@ -82,22 +67,14 @@ int main() {
 	
 	int test_pass = 1;
 	for (i = 0; i < NUM_COMPLEX_VALUES; i++) {
-		double expecteda, expectedb;
-		expecteda = creal(expected_output[i]);
-		expectedb = cimag(expected_output[i]);
+		printf("%d)\t expected: %lf + j%lf,\t actual: %lf + j%lf\n", i, creal(expected_output[i]), cimag(expected_output[i]), creal(output[i]), cimag(output[i]));
 		
-		printf("Index %d: \t Expected = ", i);
-		printComplex(expecteda, expectedb);
-		printf(",\t Actual = ");
-		printComplex(inttofloat data.output[i], inttofloat data.outputi[i]);
-		printf("\ndifference: %lf, %lf\n", fabs(inttofloat data.output[i] - expecteda), fabs(inttofloat data.outputi[i] - expectedb));
-		if (inttofloat data.output[i] != expecteda || inttofloat data.outputi[i] != expectedb) {
+		if (expected_output[i] != output[i]) {
 			test_pass = 0;
 			// break;
 		}
 	}
 
-	close(fd);
 	
 	if (test_pass) {
 		printf("TEST PASS\n");
