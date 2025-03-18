@@ -86,7 +86,6 @@ enum FFT_State {State1 = 0x1, State2 = 0x2, State3 = 0x3, State4 = 0x4, Finished
 
 
 
-
 static void compute_fft(FFTCoreState *, int, enum FFT_State);
 static void compute_fft_128(FFTCoreState *, enum FFT_State);
 
@@ -194,7 +193,6 @@ static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
     int addri = (int)addr;
     uint64_t ret;
     
-    // qemu_log("addri = %d, reminder = %d, size = %d\n", addri, addri % 8, size);
     
     if(addri == STATUS_ID){
         ret = s->status;
@@ -216,7 +214,7 @@ static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
         } else ret = 0xDEADBEEF;
     } else ret = 0xDEADBEEF;
     
-    // qemu_log("READ:  address = 0x%X, data = 0x%X, size = %d\n", addri, ret, size);
+    qemu_log("READ:  address = 0x%X, data = 0x%X, size = %d\n", addri, ret, size);
     return ret;
 }
 
@@ -225,7 +223,7 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
     FFTCoreState *s = opaque;
     int addri = (int)addr;
     
-    // qemu_log("WRITE: address = 0x%X, data = 0x%X, size = %d\n", addri, data, size);
+    qemu_log("WRITE: address = 0x%X, data = 0x%X, size = %d\n", addri, data, size);
     
     if(addri == STATUS_ID){
         if(0x1 <= data && data <= 0x3){ // if it's an existing operation
@@ -245,7 +243,7 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
         }  
     } else {
         s->status = 0xF; // 0xF = error
-        qemu_log("WRITE ERROR!\n");
+        qemu_log("WRITE ERROR: 0x%X\n", addri);
     }
 }
 

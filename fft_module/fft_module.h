@@ -28,10 +28,10 @@
 // } Complex;
 
 struct fft_data {
-    uint64_t input[FFT_BUF_LENGTH];
-    uint64_t inputi[FFT_BUF_LENGTH];
-    uint64_t output[FFT_BUF_LENGTH];
-    uint64_t outputi[FFT_BUF_LENGTH];
+    uint64_t * input;
+    uint64_t * inputi;
+    uint64_t * output;
+    uint64_t * outputi;
     size_t len;
 };
 
