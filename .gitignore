@@ -5,9 +5,11 @@ qemu
 buildroot.virgin
 buildroot-arm*
 buildroot-riscv*
+buildroot
 .directory
 .hidden
 .env
 fft_module.ko.bak*
+.vscode/
 test/fft_test
 !src/*

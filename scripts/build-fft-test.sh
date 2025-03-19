@@ -1,16 +1,16 @@
 #!/bin/bash
 
 source .env
-CROSS_COMPILE="$BASEDIR/buildroot-arm/output/host/bin/aarch64-linux-"
+CROSS_COMPILE="$BASEDIR/buildroot/output/host/bin/aarch64-linux-"
 
 cd $BASEDIR/test
 
 CC=${CROSS_COMPILE}gcc
 CFLAGS="-I../kernel"
 
-TARGET=$1
+TARGET="$1" #"fft_test"
 
-${CC} ${CFLAGS} -o ${TARGET} ${TARGET}.c -lm
+${CC} ${CFLAGS} -o ${TARGET} ${TARGET}.c ../fftlib/fft_algorithm.c lib/fftcorelib.c  -lm
 
 if [ $? -eq 0 ]; then
     echo "Compilation successful. The binary is named ${TARGET}."

@@ -24,16 +24,16 @@ make help
 
 ### Makefile Targets
 
-- `env`                       - Create .env file.
-- `clone-repos`               - Clone QEMU and Buildroot repositories.
-- `create-setup-arm`          - Create initial setup for ARM, cloning both QEMU and Buildroot.
-- `build-buildroot-arm`       - Build Buildroot for ARM.
-- `build-qemu-arm`            - Configure and build QEMU for ARM.
-- `run-qemu-arm`              - Run QEMU for ARM.
-- `apply-mods`                - Sync modified files.
-- `build-kernel-module-arm`   - Build kernel module for ARM.
-- `build-test`                - Build kernel module test.
-- `copy-test`                 - Copy test executable to root filesystem.
+- `env`                   - Create .env file.
+- `clone-repos`           - Clone QEMU and Buildroot repositories.
+- `create-setup`          - Create initial setup for ARM, cloning both QEMU and Buildroot.
+- `build-buildroot`       - Build Buildroot for ARM.
+- `build-qemu`            - Configure and build QEMU for ARM.
+- `run-qemu`              - Run QEMU for ARM.
+- `apply-mods`            - Sync modified files.
+- `build-kernel-module`   - Build kernel module for ARM.
+- `build-test`            - Build kernel module test.
+- `copy-test`             - Copy test executable to root filesystem.
 
 ## Build Instructions:
 
@@ -56,16 +56,16 @@ make help
   make clone-repos
   ```
 
-4. Create the setup for the build environment: (perhaps unnecessary? TODO)
+4. Create the setup for the build environment: 
    
   ```shell
-  make create-setup-arm
+  make create-setup
   ```
 
 5. Build Buildroot (it will take a while):
    
   ```shell
-  make build-buildroot-arm
+  make build-buildroot
   ```
 
 6. Apply the modifications to the source files of QEMU and Buildroot:
@@ -77,13 +77,13 @@ make help
 7. Build QEMU with the FFT_CORE (it will take a while):
    
   ```shell
-  make build-qemu-arm
+  make build-qemu
   ```
    
 8. Build the kernel module inside Buildroot:
 
   ```shell
-  make build-kernel-module-arm
+  make build-kernel-module
   ```
 
 9. Cross-compile the test:
@@ -100,7 +100,7 @@ make help
 11. Run the Buildroot image with the modified QEMU:
    
   ```shell
-  make run-qemu-arm
+  make run-qemu
   ```
   
 When prompted for a login, type `root` and press Enter. Congrats, you are now inside the VM!
