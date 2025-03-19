@@ -34,8 +34,8 @@ int main(int argc, char **argv) {
 	if(argc > 1){
 		fd = fopen(argv[1], "r");
 	} else {
-		printf("Warning: no input file specified, assuming 'Eb_311Hz.csv'\n");
-		fd=fopen("Eb_311Hz.csv","r");
+		printf("Warning: no input file specified, assuming '/opt/data/Eb_311Hz.csv'\n");
+		fd=fopen("/opt/data/Eb_311Hz.csv","r");
 	}
 	
 	double Fs = 1470.0; // we know it's the same for all our input files
