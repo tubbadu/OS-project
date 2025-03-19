@@ -11,5 +11,5 @@ buildroot
 .env
 fft_module.ko.bak*
 .vscode/
-
+test/fft_test
 !src/*
