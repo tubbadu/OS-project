@@ -1,4 +1,4 @@
-.PHONY: help env docs
+.PHONY: help env docs all
 # TODO also remove useless phony
 help:
 	@echo "Available targets:"
@@ -64,6 +64,9 @@ docs:
 	bash -c "source .venv/bin/activate && mkdocs build && mkdocs serve"
 
 
-x: apply-mods build-qemu build-kernel-module build-test copy-test run-qemu # TODO remove at the end
+x: apply-mods build-qemu build-kernel-module build-test copy-test run-qemu
 
 xnoqemu: apply-mods build-kernel-module build-test copy-test run-qemu
+
+
+all: env clone-repos create-setup apply-mods build-buildroot build-qemu build-kernel-module build-test copy-test run-qemu
