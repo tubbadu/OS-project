@@ -60,7 +60,7 @@ copy-test:
 	bash scripts/copy-test-in-rootfs.sh
 
 docs:
-	mkdocs build && mkdocs serve
+	bash -c "source .venv/bin/activate && mkdocs build && mkdocs serve"
 
 
 x: apply-mods build-qemu build-kernel-module build-test copy-test run-qemu # TODO remove at the end
