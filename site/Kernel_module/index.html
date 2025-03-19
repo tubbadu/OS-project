@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Kernel Module Documentation: FFT Core - OS Project</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Kernel Module Documentation: FFT Core";
+        var mkdocs_page_input_path = "Kernel_module.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> OS Project
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="" href="../README.md">None</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Kernel Module Documentation: FFT Core</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-introduction">1. Introduction</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-requirements-todo">2. Requirements TODO</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-features-todo-rivedere">3. Features TODO: rivedere</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-kernel-module-implementation">4. Kernel Module Implementation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#41-code-structure">4.1 Code Structure</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#42-fft-functionality">4.2 FFT Functionality</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-compilation-and-installation">5. Compilation and Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-testing-on-qemu-and-buildroot">6. Testing on QEMU and Buildroot</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-verification-of-fft-results-using-matlab">7. Verification of FFT Results Using MATLAB</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#validation-with-lab-created-samples">Validation with Lab-created Samples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#validation-with-real-world-samples">Validation with Real-World Samples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#future-improvements">Future Improvements</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">OS Project</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Kernel Module Documentation: FFT Core</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="kernel-module-documentation-fft-core">Kernel Module Documentation: FFT Core</h1>
+<h2 id="1-introduction">1. Introduction</h2>
+<p>This document describes the Linux kernel module developed to compute the <strong>Fast Fourier Transform (FFT)</strong>. The module has been tested in an emulated environment using <strong>QEMU</strong> and <strong>Buildroot</strong>.</p>
+<h2 id="2-requirements-todo">2. Requirements TODO</h2>
+<ul>
+<li>Linux kernel compiled with support for custom module.</li>
+<li>Buildroot configured to include the necessary libraries.</li>
+<li>Test environment emulated with QEMU, modified to support the custom hardware.</li>
+</ul>
+<h2 id="3-features-todo-rivedere">3. Features TODO: rivedere</h2>
+<ul>
+<li><strong>Memory Allocation:</strong>  Processes 128 complex input values (each 64-bit) and produces 128 complex output values.</li>
+<li><strong>System Calls Handling:</strong> Provides an interface for process interaction with the OS.</li>
+<li><strong>User space library:</strong> Included user space library to ease the interface with the kernel module.</li>
+<li><strong>FFT Signal Processing:</strong> Implements FFT algorithm for signal analysis.</li>
+</ul>
+<h2 id="4-kernel-module-implementation">4. Kernel Module Implementation</h2>
+<h3 id="41-code-structure">4.1 Code Structure</h3>
+<p>The Kernel module is organized into the following main sections:</p>
+<ul>
+<li><strong>Initialization</strong>: Registering the module in the kernel and allocating necessary resources.</li>
+<li><strong>FFT Processing</strong>: Using the <a href="https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm">Cooley-Tukey</a> FFT method, the module computes the FFT of the input signal. Due to the nature of the algorithm, only input sizes that are <strong>powers of two</strong> are allowed.</li>
+<li><strong>Interface:</strong> The module comunicates with the User through the <a href="https://man7.org/linux/man-pages/man2/ioctl.2.html"><code>ioctl</code></a> function.</li>
+</ul>
+<h3 id="42-fft-functionality">4.2 FFT Functionality</h3>
+<p>This algorithm implements the <strong>Fast Fourier Transform (FFT)</strong> using an iterative approach optimized for input sizes that are powers of two. Below is a brief description of its key components:</p>
+<ul>
+<li>
+<p>Sample Count Adjustment (<code>getNSAMPLES</code>)
+Ensures the number of samples is the next power of two.</p>
+</li>
+<li>
+<p>Logarithm Base 2 Calculation (<code>ilog2</code>)
+Computes the integer logarithm base 2 of a given number, used to determine the number of FFT stages.</p>
+</li>
+<li>
+<p>Power of Two Check (<code>check</code>)
+Verifies if the input size is a power of two, a requirement for the Cooley-Tukey FFT algorithm.</p>
+</li>
+<li>
+<p>Bit-Reversal (<code>reverse</code>)
+Computes the bit-reversed index of an integer, essential for reordering elements before applying the FFT.</p>
+</li>
+<li>
+<p>Reordering the Input (<code>sort</code>)
+Reorders the input vector based on bit-reversed indices to optimize the FFT computation.</p>
+</li>
+<li>
+<p>FFT Computation (<code>transform</code>)</p>
+</li>
+<li>Uses the iterative <strong>Cooley-Tukey FFT</strong> method.</li>
+<li>Initializes a set of complex roots of unity (twiddle factors).</li>
+<li>
+<p>Applies a series of butterfly operations to iteratively compute the FFT.</p>
+</li>
+<li>
+<p>Final FFT Transformation (<code>FFT</code>)
+Calls <code>transform()</code> and scales the output by the step size.</p>
+</li>
+</ul>
+<p>This implementation is designed for efficiency and correctness in FFT-based frequency analysis.</p>
+<h2 id="5-compilation-and-installation">5. Compilation and Installation</h2>
+<p>To correctly compile and install the module please refer to the <a href="./README.md"><strong>README.md</strong></a> file </p>
+<h2 id="6-testing-on-qemu-and-buildroot">6. Testing on QEMU and Buildroot</h2>
+<p>The correctness of the kernel module was verified using <a href="test/fft_test.c">fft_test.c</a>. The output was compared with the results obtained from the same algorithm running without the custom hardware.</p>
+<h2 id="7-verification-of-fft-results-using-matlab">7. Verification of FFT Results Using MATLAB</h2>
+<p>To ensure the correctness of the results produced by the module, we used <strong>MATLAB</strong> as a reference tool to compute the Fast Fourier Transform (FFT) of test signals. MATLAB's FFT implementation is highly reliable and widely used in scientific and engineering applications, making it an excellent benchmark for comparison.</p>
+<h3 id="validation-with-lab-created-samples">Validation with Lab-created Samples</h3>
+<ol>
+<li><strong>Test Signal Generation</strong>:</li>
+<li>We generated synthetic test signals in MATLAB, such as sine waves.</li>
+<li>
+<p>Example of a 440 Hz sine wave generation:
+     <code>matlab
+     Fs = 1500;                     % Sampling frequency (1 kHz)
+     t = 0:1/Fs:1-1/Fs;             % Time vector (1 second)
+     f = 440;                       % Frequency of the sine wave (50 Hz)
+     signal = sin(2 * pi * f * t);  % Generate the sine wave</code></p>
+</li>
+<li>
+<p><strong>FFT Computation in MATLAB</strong>:</p>
+</li>
+<li>We computed the FFT of the test signal using MATLAB's built-in <code>fft</code> function.</li>
+<li>
+<p>Example:
+     <code>matlab
+     fft_result_matlab = fft(signal);                 % Compute the FFT
+     fft_magnitude_matlab = abs(fft_result_matlab);   % Get the magnitude
+     frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab);                        % Frequency axis</code></p>
+</li>
+<li>
+<p><strong>FFT Computation in the Module</strong>:</p>
+</li>
+<li>The same test signal was processed by the module to compute the FFT.</li>
+<li>
+<p>The module's output was saved for comparison.</p>
+</li>
+<li>
+<p><strong>Comparison of Results</strong>: TODO</p>
+</li>
+<li>We compared the FFT results from MATLAB and the module <strong>element by element</strong>.</li>
+<li>We calculated the <strong>absolute difference</strong> between corresponding frequency bins:
+     <code>matlab
+     difference = abs(fft_magnitude_matlab - fft_magnitude_module);
+     mse = mean(difference.^2);  % Mean Squared Error
+     fprintf('Mean Squared Error: %f\n', mse);</code></li>
+<li>
+<p>A <strong>tolerance threshold</strong> was defined to account for minor numerical differences due to floating-point precision or implementation-specific optimizations.</p>
+</li>
+<li>
+<p><strong>Visualization</strong>:</p>
+</li>
+<li>We plotted the FFT results from both MATLAB and the module to visually inspect the agreement.</li>
+<li>
+<p>Example:
+     <code>matlab
+     plot(frequencies, fft_magnitude_matlab, 'b', 'LineWidth', 1.5);  % MATLAB FFT
+     hold on;
+     plot(frequencies, fft_magnitude_module, 'r--', 'LineWidth', 1.5);  % Module FFT
+     xlabel('Frequency (Hz)');
+     ylabel('Magnitude');
+     legend('MATLAB FFT', 'Module FFT');
+     title('Comparison of FFT Results');
+     grid on;</code></p>
+</li>
+<li>
+<p><strong>Validation Metrics</strong>:</p>
+</li>
+<li><strong>Mean Squared Error (MSE)</strong>: Computed to quantify the difference between the two FFT outputs.</li>
+<li>
+<p><strong>Frequency Bin Accuracy</strong>: Ensured that the dominant frequencies identified by the module matched those identified by MATLAB.</p>
+</li>
+<li>
+<p><strong>Edge Case Testing</strong>:</p>
+</li>
+<li>We tested the module with various edge cases, such as:<ul>
+<li>Signals with very low or very high amplitudes.</li>
+<li>Signals with a single frequency component.</li>
+<li>Signals with added noise to simulate real-world conditions.</li>
+</ul>
+</li>
+<li>
+<p>These tests ensured that the module behaves correctly under a wide range of scenarios.</p>
+</li>
+<li>
+<p><strong>Automated Testing</strong>:</p>
+</li>
+<li>We developed a MATLAB script to automate the verification process for multiple test signals.</li>
+<li>This script generates signals, computes the FFT, compares the results, and logs the metrics.</li>
+</ol>
+<h3 id="validation-with-real-world-samples">Validation with Real-World Samples</h3>
+<p>We then extended our validation process to <strong>real-world audio samples</strong>, following the same rigorous procedure to ensure the <strong>efficiency</strong> and <strong>accuracy</strong> of our module. This step was crucial to verify the module's performance in practical scenarios, where signals often contain noise, harmonics, and other complexities not present in synthetic test cases.</p>
+<ol>
+<li><strong>Real-World Signal Acquisition</strong>:</li>
+<li>We captured real audio samples using a high-quality microphone and preprocessed them to match the module's input requirements.</li>
+<li>
+<p>Examples of samples included musical notes played on various instruments, voice recordings, and environmental sounds.</p>
+</li>
+<li>
+<p><strong>FFT Computation and Comparison</strong>:</p>
+</li>
+<li>We computed the FFT of these real-world samples using both <strong>MATLAB</strong> (as the reference) and our module.</li>
+<li>
+<p>The results were compared using the same metrics as before: <strong>Mean Squared Error (MSE)</strong>, and <strong>frequency bin accuracy</strong>.</p>
+</li>
+<li>
+<p><strong>Observations</strong>:</p>
+</li>
+<li>The module demonstrated <strong>high accuracy</strong> for <strong>higher frequencies</strong> (e.g., notes above C1), with results closely matching those from MATLAB.</li>
+<li>
+<p>However, we observed a <strong>slightly higher error margin</strong> for <strong>very low frequencies</strong> (e.g., notes in the range C0 to B0). This is likely due to the inherent challenges in accurately resolving low-frequency components with limited sample sizes and the sensitivity of the FFT algorithm at lower frequency ranges.</p>
+</li>
+<li>
+<p><strong>Conclusion on Accuracy</strong>:</p>
+</li>
+<li>Despite the minor discrepancies at lower frequencies, the module's performance was deemed <strong>highly accurate</strong> for the majority of the frequency spectrum, particularly in the range most relevant for musical note recognition.</li>
+<li>The observed errors at lower frequencies are within acceptable limits for our target applications, and we are exploring potential optimizations to further improve accuracy in this range.</li>
+</ol>
+<h3 id="future-improvements">Future Improvements</h3>
+<ul>
+<li>We plan to add the support to perfom also the inverse fft</li>
+<li>We plan to investigate techniques to enhance the module's accuracy for <strong>very low frequencies</strong>, such as:</li>
+<li>Increasing the sample size or sampling rate.</li>
+<li>Applying advanced windowing functions to reduce spectral leakage.</li>
+<li>Incorporating post-processing algorithms to refine frequency detection.</li>
+</ul>
+<p>This thorough validation process, using both synthetic and real-world signals, confirms that our module is <strong>reliable</strong> and <strong>accurate</strong> for its intended applications, with only minor limitations at the extreme low end of the frequency spectrum.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

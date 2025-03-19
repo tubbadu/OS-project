@@ -2,3 +2,4 @@ site_name: OS Project
 nav:
     - README.md
     - Kernel_module.md
+theme: readthedocs
