@@ -68,9 +68,15 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
     
     iowrite32(0x1, fft_base + STATUS_ID); // Trigger FFT computation
 
-    // Wait for computation to finish // TODO add a sleep or something (udelay(1000);)
-    while (ioread32(fft_base + STATUS_ID) != 0x5); // TODO also check for error message
     
+    while (ioread32(fft_base + STATUS_ID) != 0x5){
+        if (ioread32(fft_base + STATUS_ID) == 0xF){
+            printk(KERN_ALERT "FFT: Error in computation\n");
+            return -EINVAL;
+        }else{
+            udelay(100);
+        }
+    }
     for (i = 0; i < len; i++) {
         addr1 = (2*i + 0) * 8;
         addr2 = (2*i + 1) * 8;
