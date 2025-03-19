@@ -48,7 +48,6 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 #define SIZE 128 // number of couple of values (real + imaginary)
 
 
-// #define PI 3.14159265358979323846 // TODO change this with the constant inside math.h
 
 
 struct FFTCoreState {
