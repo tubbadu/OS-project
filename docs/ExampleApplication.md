@@ -13,7 +13,7 @@ To ensure the correctness of the results produced by the module, we used **MATLA
 - **Test Signal Generation**:
     - We generated synthetic test signals in MATLAB, such as sine waves, square waves, or combinations of multiple frequencies.
     - Example of a 440 Hz sine wave generation:
-```matlab
+```
 Fs = 1500;                    % Sampling frequency (1 kHz)
 t = 0:1/Fs:1-1/Fs;            % Time vector (1 second)
 f = 440;                      % Frequency of the sine wave (50 Hz)
@@ -23,7 +23,7 @@ signal = sin(2 * pi * f * t); % Generate the sine wave
 - **FFT Computation in MATLAB**:
     - We computed the FFT of the test signal using MATLAB's built-in `fft` function.
     - Example:
-```matlab
+```
 fft_result_matlab = fft(signal);                                                % Compute the FFT
 fft_magnitude_matlab = abs(fft_result_matlab);                                  % Get the magnitude
 frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab); % Frequency axis
@@ -36,17 +36,17 @@ frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab); 
 - **Comparison of Results**:
     - We compared the FFT results from MATLAB and the module **element by element**.
     - We calculated the **absolute difference** between corresponding frequency bins:
-```matlab
+```
 difference = abs(fft_magnitude_matlab - fft_magnitude_module);
 mse = mean(difference.^2); % Mean Squared Error
 fprintf('Mean Squared Error: %f\n', mse);
 ```
     - A **tolerance threshold** was defined to account for minor numerical differences due to floating-point precision or implementation-specific optimizations.
 
-- **Visualization**:
+1. **Visualization**:
     - We plotted the FFT results from both MATLAB and the module to visually inspect the agreement.
     - Example:
-```matlab
+```
 plot(frequencies, fft_magnitude_matlab, 'b', 'LineWidth', 1.5);    % MATLAB FFT
 hold on;
 plot(frequencies, fft_magnitude_module, 'r--', 'LineWidth', 1.5);  % Module FFT
@@ -57,11 +57,11 @@ title('Comparison of FFT Results');
 grid on;
 ```
 
-- **Validation Metrics**:
+1. **Validation Metrics**:
     - **Mean Squared Error (MSE)**: Computed to quantify the difference between the two FFT outputs.
     - **Frequency Bin Accuracy**: Ensured that the dominant frequencies identified by the module matched those identified by MATLAB.
 
-- **Edge Case Testing**:
+1. **Edge Case Testing**:
     - We tested the module with various edge cases, such as:
       - Signals with very low or very high amplitudes.
       - Signals with a single frequency component.

@@ -6,7 +6,7 @@ This guide provides step-by-step instructions to set up QEMU and Buildroot on Ub
 
 To ensure a smooth setup, install the necessary dependencies using the following command:
 
-```sh
+```
 sudo apt update && sudo apt install -y $(cat requirements.txt)  
 ```
 
@@ -37,84 +37,85 @@ Available targets:
 
 - Clone this repository:
 
-```sh
+```
 git clone https://github.com/tubbadu/OS-project.git
 cd OS-project
 ```
 
 - Create `.env` file:
    
-```sh
+```
 make env
 ```
 
 - Clone [Buildroot](https://github.com/buildroot/buildroot) and [QEMU](https://github.com/qemu/qemu) repositories (if you already cloned them, you can move them inside `OS-project` and skip this step):
   
-```sh
+```
 make clone-repos
 ```
 
 - Create the setup for the build environment: 
   
-```sh
+```
 make create-setup
 ```
 
 - Apply the modifications to the source files of QEMU and Buildroot:
    
-```sh
+```
 make apply-mods
 ```
 
 - Build Buildroot (it will take a while):
    
-```sh
+```
 make build-buildroot
 ```
 
 - Build QEMU with the FFT_CORE (it will take a while):
   
-```sh
+```
 make build-qemu
 ```
   
 - Build the kernel module inside Buildroot:
 
-```sh
+```
 make build-kernel-module
 ```
 
 - Cross-compile the test:
 
-```sh
+```
 make build-test
 ```
 - Copy the test inside the root filesystem of the buildroot image
 
-```sh
+```
 make copy-test
 ```
   
 - Run the Buildroot image with the modified QEMU:
    
-```sh
+```
 make run-qemu
 ```
 
   When prompted for a login, type `root` and press Enter. Congrats, you are now inside the VM!
     
   You can install the kernel module with:
-```sh
+  
+```
 /opt/install-kernel-module.sh
 ```
 
 To check that everything is workig correctly you can run the test:
-```sh
+```
 /opt/fft_test
 ```
 
 To run the example program:
-```sh
+```
 /opt/fft_example
 ```
   

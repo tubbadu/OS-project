@@ -14,3 +14,4 @@ fft_module.ko.bak*
 test/fft_test
 test/fft_example
 !src/*
+site
