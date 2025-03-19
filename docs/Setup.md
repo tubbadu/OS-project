@@ -30,6 +30,8 @@ Available targets:
   build-kernel-module   - Build kernel module.
   build-test            - Build kernel module test.
   copy-test             - Copy test executable to root filesystem.
+  docs                  - Build mkdocs and start the server.
+  all                   - Run all the previous commands.
   help                  - Prints this help message.
 ```
 
