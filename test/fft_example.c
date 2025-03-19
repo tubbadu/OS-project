@@ -8,11 +8,14 @@
 #include <complex.h>
 
 #include "../fftlib/fft_algorithm.h"
+#include "lib/fftcorelib.h"
 
 int main() {
 	
+	double Fs = 1470.0;
 	// FILE* fd=fopen("/opt/data/average_prova.csv","r");
-	FILE* fd=fopen("/opt/data/sinusoide_440hz.csv","r");
+	FILE* fd=fopen("/opt/data/2048.csv","r");
+	// FILE* fd=fopen("/opt/data/sinusoide_440hz.csv","r");
 	// FILE* fd=fopen("/opt/data/sinusoide_500hz.csv","r");
 	// FILE* fd=fopen("/opt/data/sinusoide_2093hz.csv","r");
 	FILE* output_fd=fopen("/opt/data/output.csv","w+");
@@ -21,7 +24,6 @@ int main() {
 		perror("Failed to open file.");
 		return 0;
 	}
-	printf("helo");
 	
 	double temp;
 	int nlines = 0;
@@ -32,10 +34,10 @@ int main() {
 	
 	
 	
-	printf("file length:  %d\n", nlines);
+	// printf("file length:  %d\n", nlines);
 	
 	const int NSAMPLES = getNSAMPLES(nlines);
-	printf("input length: %d\n", NSAMPLES);
+	// printf("input length: %d\n", NSAMPLES);
 	double complex *vec = malloc(sizeof(double complex) * NSAMPLES);
 	
 	rewind(fd); // put cursor back at the beginning of the file
@@ -56,7 +58,8 @@ int main() {
 	}
 	
 	
-	FFT(vec, NSAMPLES, 1);
+	// FFT(vec, NSAMPLES, 1);
+	FFTcore(vec, vec, NSAMPLES);
 	printf("Risultato FFT:\n");
 	
 	
@@ -75,15 +78,15 @@ int main() {
 	
 	
 	printf("MAX MODULO È %d di valore %f!\n",maxi,modulo(vec[maxi]));
-	int f;
 	
+	double freq;
 	if(maxi > NSAMPLES/2){
-		f = NSAMPLES - maxi;
+		freq = (NSAMPLES - maxi) * (Fs / NSAMPLES);
 	} else {
-		f = maxi;
+		freq = maxi * (Fs / NSAMPLES);
 	}
 	
-	printf("La frequenza è %d Hz\n", f);
+	printf("La frequenza è %lf Hz\n", freq);
 	
 	return 0;
 }
