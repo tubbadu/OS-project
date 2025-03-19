@@ -60,6 +60,6 @@ copy-test:
 	bash scripts/copy-test-in-rootfs.sh
 
 
-x: apply-mods build-qemu-arm build-kernel-module-arm build-test copy-test run-qemu-arm # TODO remove at the end
+x: apply-mods build-qemu build-kernel-module build-test copy-test run-qemu # TODO remove at the end
 
-xnoqemu: apply-mods build-kernel-module-arm build-test copy-test run-qemu-arm
+xnoqemu: apply-mods build-kernel-module build-test copy-test run-qemu

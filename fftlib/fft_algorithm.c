@@ -93,17 +93,17 @@ int getNSAMPLES(int nlines){
 	return pow(2, intlog);
 }
 
-void recog_note(double frequency){
-    int semitone;
-    const char *noteNames[] = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-    semitone=round(12*log2(frequency/440.0));
-    if(abs(semitone)>11){
-        semitone=semitone%12;
-    }
-    printf("The note is: ");
-    if(semitone>=0){
-        printf("%s\n",noteNames[semitone]); 
-    }else{
-        printf("%s\n",noteNames[12+semitone]);
-    }
-}
+// void recog_note(double frequency){
+//     int semitone;
+//     const char *noteNames[] = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+//     semitone=round(12*log2(frequency/440.0));
+//     if(abs(semitone)>11){
+//         semitone=semitone%12;
+//     }
+//     printf("The note is: ");
+//     if(semitone>=0){
+//         printf("%s\n",noteNames[semitone]); 
+//     }else{
+//         printf("%s\n",noteNames[12+semitone]);
+//     }
+// }

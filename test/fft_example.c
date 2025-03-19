@@ -10,6 +10,24 @@
 #include "../fft_module/fft_module.h"
 #include "../fftlib/fft_algorithm.h"
 #include "lib/fftcorelib.h"
+
+const char *noteNames[] = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+
+const char* recog_note(double frequency){
+	int semitone;
+	
+	semitone=round(12*log2(frequency/440.0));
+	if(abs(semitone)>11){
+		semitone=semitone%12;
+	}
+	if(semitone>=0){
+		return noteNames[semitone];
+	}else{
+		return noteNames[12+semitone];
+	}
+}
+
+
 int main() {
 	
 	double Fs = 1470.0;
@@ -73,5 +91,6 @@ int main() {
 	
 	printf("The frequency is %lf Hz\n", freq);
 	
+	printf("The recognized note is: %s\n", recog_note(freq));
 	return 0;
 }
