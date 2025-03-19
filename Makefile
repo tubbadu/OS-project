@@ -1,4 +1,4 @@
-.PHONY: help build-qemu-riscv run-qemu-riscv apply-mods build-qemu-arm run-qemu-arm build-buildroot-arm build-buildroot-riscv env clone-repos create-setup-arm build-kernel-module-arm build-test copy-test all-riscv all-arm
+.PHONY: help env docs
 # TODO also remove useless phony
 help:
 	@echo "Available targets:"
@@ -58,6 +58,9 @@ build-test:
 copy-test:
 	@echo "Copying test executable to root filesystem..."
 	bash scripts/copy-test-in-rootfs.sh
+
+docs:
+	mkdocs build && mkdocs serve
 
 
 x: apply-mods build-qemu build-kernel-module build-test copy-test run-qemu # TODO remove at the end
