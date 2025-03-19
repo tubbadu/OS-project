@@ -13,3 +13,12 @@ By integrating this functionality directly into the kernel, the module enables e
 ---
 
 You can find the complete repository on [GitHub](https://github.com/tubbadu/OS-project).
+
+## Authors
+
+This project was developed by:
+
+- Alessandro Ribaudo (s332997)
+- Jacopo Cesaretti (s331338)
+- Selen Karas (s329110)
+- Rong Zhu (s327239)

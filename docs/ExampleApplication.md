@@ -46,9 +46,9 @@ difference = abs(fft_magnitude_matlab - fft_c);
 mse = mean(difference.^2); % Mean Squared Error
 fprintf('Mean Squared Error: %f\n', mse);
 ```
-    - A **tolerance threshold** was defined to account for minor numerical differences due to floating-point precision or implementation-specific optimizations.
+A **tolerance threshold** was defined to account for minor numerical differences due to floating-point precision or implementation-specific optimizations.
 
-1. **Visualization**:
+- **Visualization**:
     - We plotted the FFT results from both MATLAB and the module to visually inspect the agreement.
 ```
 plot(frequencies, fft_magnitude_matlab, 'b', 'LineWidth', 1.5);    % MATLAB FFT
@@ -61,11 +61,11 @@ title('Comparison of FFT Results');
 grid on;
 ```
 
-1. **Validation Metrics**:
+- **Validation Metrics**:
     - **Mean Squared Error (MSE)**: Computed to quantify the difference between the two FFT outputs.
     - **Frequency Bin Accuracy**: Ensured that the dominant frequencies identified by the module matched those identified by MATLAB.
 
-1. **Edge Case Testing**:
+- **Edge Case Testing**:
     - We tested the module with various edge cases, such as:
       - Signals with very low or very high amplitudes.
       - Signals with a single frequency component.
