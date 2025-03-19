@@ -28,14 +28,18 @@ const char* recog_note(double frequency){
 }
 
 
-int main() {
+int main(int argc, char **argv) {
 	
-	double Fs = 1470.0;
-	// FILE* fd=fopen("/opt/data/average_prova.csv","r");
-	FILE* fd=fopen("/opt/data/2048.csv","r");
-	// FILE* fd=fopen("/opt/data/sinusoide_440hz.csv","r");
-	// FILE* fd=fopen("/opt/data/sinusoide_500hz.csv","r");
-	// FILE* fd=fopen("/opt/data/sinusoide_2093hz.csv","r");
+	FILE *fd;
+	if(argc > 1){
+		fd = fopen(argv[1], "r");
+	} else {
+		printf("Warning: no input file specified, assuming 'Eb_311Hz.csv'\n");
+		fd=fopen("Eb_311Hz.csv","r");
+	}
+	
+	double Fs = 1470.0; // we know it's the same for all our input files
+
 	FILE* output_fd=fopen("/opt/data/output.csv","w+");
 	
 	if (fd <= 0) {
