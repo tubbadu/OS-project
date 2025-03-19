@@ -2,7 +2,8 @@
 
 int main() {
     // FILE* fd=fopen("prova.csv","r");
-    FILE* fd=fopen("average_prova.csv","r");
+    //FILE* fd=fopen("average_prova.csv","r");
+    FILE* fd=fopen("output_prova.csv","r");
     // FILE* fd=fopen("sinusoide_440hz.csv","r");
     // FILE* fd=fopen("sinusoide_500hz.csv","r");
     // FILE* fd=fopen("sinusoide_2093hz.csv","r");
@@ -50,7 +51,7 @@ int main() {
     
     printf("MAX MODULO È %d di valore %f!\n",maxi,modulo(vec[maxi]));
     
-    // Frequenza di campionamento (esempio: 44100 Hz)
+
     double Fs = 1500.0;
     
     double freq;
@@ -62,9 +63,9 @@ int main() {
     
     printf("La frequenza è %lf Hz\n", freq);
 
-    const char* note_name;
-    note_name=recog_note(freq);
-    printf("%s", note_name);
+    
+   recog_note(freq);
+
     
     return 0;
 }
