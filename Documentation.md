@@ -22,11 +22,19 @@ This document describes the Linux kernel module developed to perform the **Fast 
 - Test environment emulated with QEMU.
 
 
+## 4. Features
+- **Process Management:** Handles the creation, execution, and termination of processes.
+- **Memory Allocation:** Implements a dynamic memory management system.
+- **Scheduling Algorithm:** Manages CPU time distribution among processes.
+- **System Calls Handling:** Provides an interface for process interaction with the OS.
+- **Inter-process Communication (IPC):** Enables communication between processes.
+- **FFT Signal Processing:** Implements FFT algorithms for signal analysis.
+
 ---
 
-## 4. Implementation
+## 5. Implementation
 
-### 4.1 Code Structure
+### 5.1 Code Structure
 
 The module is divided into the following main sections:
 
@@ -35,8 +43,46 @@ The module is divided into the following main sections:
 3. **FFT Processing**: Using the Cooley-Tukey FFT method, the module computes the FFT of the input signal.
 4. **Note Identification**: The module computes the number of semitones by which the frequency differs from A4 (440 Hz).
 5. **Output of Results**: Writing the result to kernel logs.
-
-### 4.2 FFT Functionality
+### 5.2 Folder Organization
+```
+OS-project-main/   
+│   
+├── **Makefile**                             # Compilation script to build the project    
+├── **README.md**                            # Project documentation   
+├── **requirements.txt**                     # List of dependencies  
+│  
+├── **fft/**  
+│   ├── **fft_algorithm.c**                  # Implementation of the FFT algorithm   
+│   ├── **fft_algorithm.h**                  # Header file for FFT functions   
+│   ├── **main.c**                           # Test program for FFT algorithm   
+│   ├── **output.csv**                       # Sample output of FFT computations   
+│   
+├── **fft_module/**   
+│   ├── **fft_module.c**                     # Kernel module for FFT functionality   
+│   ├── **fft_module.h**                     # Header file for the FFT kernel module   
+│   
+├── **scripts/**   
+│   ├── **build-fft-module.sh**              # Script to build the FFT kernel module    
+│   ├── **start-qemu-arm.sh**                # Script to start QEMU with ARM architecture   
+│   
+├── **src/**   
+│   ├── **buildroot-arm/**   
+│   │   ├── **package/fft_module/**   
+│   │   │   ├── **fft_module.mk**            # Makefile for integrating FFT module into Buildroot  
+│   │    
+│   ├── **qemu/**   
+│   │   ├── **hw/arm/virt.c**                # QEMU virtual hardware setup for ARM   
+│   │   ├── **hw/misc/fft_core.c**           # QEMU FFT core functionality   
+│   │   ├── **include/hw/misc/fft_core.h**   # Header for FFT core in QEMU   
+│   
+├── **test/**    
+│   ├── **fft_test.c**                       # Test file for FFT implementation    
+│   ├── **recog_note.c**                     # Recognizing notes based on FFT output   
+│   ├── **recog_note.h**                     # Header file for note recognition   
+│   ├── **test.sh**                          # Test script for automation   
+│   ├── **install-kernel-module.sh**         # Installs kernel module for FFT   
+```
+### 5.3 FFT Functionality
 
 This algorithm implements the **Fast Fourier Transform (FFT)** using an iterative approach optimized for input sizes that are powers of two. Below is a brief description of its key components:
 
@@ -68,7 +114,7 @@ Ensures the number of samples is the next power of two.
 
 
 This implementation is designed for efficiency and correctness in FFT-based frequency analysis, particularly in audio signal processing.
-### 4.3 Frequency-to-Note Mapping
+### 5.4 Frequency-to-Note Mapping
 
 #### Note Recognition (`recog_note`)
 - Determines the closest musical note to a given frequency using logarithmic scaling.
@@ -78,14 +124,14 @@ This implementation is designed for efficiency and correctness in FFT-based freq
 
 ---
 
-## 5. Compilation and Installation
+## 6. Compilation and Installation
 
 To correctly compile and install the module please refer to the **README.md** file 
 
-## 6. Testing on QEMU and Buildroot
+## 7. Testing on QEMU and Buildroot
 # TODO
 
-## 7. Verification of FFT Results Using MATLAB
+## 8. Verification of FFT Results Using MATLAB
 
 To ensure the correctness of the results produced by the module, we used **MATLAB** as a reference tool to compute the Fast Fourier Transform (FFT) of test signals. MATLAB's FFT implementation is highly reliable and widely used in scientific and engineering applications, making it an excellent benchmark for comparison.
 
