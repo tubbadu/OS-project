@@ -35,6 +35,6 @@ double modulo(complex double);
 
 int getNSAMPLES(int);
 
-const char* recog_note(int frequency);
+void recog_note(double frequency);
 
 #endif // FFT_ALGORITHM_H
