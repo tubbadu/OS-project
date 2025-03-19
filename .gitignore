@@ -16,3 +16,4 @@ test/fft_example
 !src/*
 site
 rootfs
+.venv
