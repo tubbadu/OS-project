@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <complex.h>
+
 #include "../fft_module/fft_module.h"
 #include "../fftlib/fft_algorithm.h"
 
@@ -57,12 +58,13 @@ int main() {
 	
 	
 	data.len = NUM_COMPLEX_VALUES;
+	
 	FFT(expected_output, NUM_COMPLEX_VALUES, 1);
-	
-	FFTcore(input, output, NUM_COMPLEX_VALUES);
-	
-	
-	
+
+	if(FFTcore(input, output, NUM_COMPLEX_VALUES) == EXIT_FAILURE){
+		return EXIT_FAILURE;
+	}
+
 
 	
 	int test_pass = 1;
