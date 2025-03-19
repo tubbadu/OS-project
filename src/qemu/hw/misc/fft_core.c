@@ -27,14 +27,6 @@
 typedef struct FFTCoreState FFTCoreState;
 DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 
-// static int prime(uint64_t n);
-// static void compute_e(uint64_t p,uint64_t q,uint64_t t,uint64_t* e,uint64_t* d);
-// static uint64_t compute_d(uint64_t t, uint64_t x);
-// static uint64_t encrypt(uint64_t msg, uint64_t p, uint64_t q);
-// static uint64_t decrypt(uint64_t msg, uint64_t p, uint64_t q);
-// static uint64_t mod_exp(uint64_t b, uint64_t exp, uint64_t mod);
-
-
 
 #define STATUS_ID 0x0
 #define IN_START_ID 0x8
@@ -48,8 +40,6 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 #define SIZE 128 // number of couple of values (real + imaginary)
 
 
-
-
 struct FFTCoreState {
     SysBusDevice parent_obj;
     MemoryRegion iomem;
@@ -57,9 +47,6 @@ struct FFTCoreState {
     uint64_t output[SIZE*2];
     uint64_t status;
 };
-
-
-
 
 
 static void compute_fft(FFTCoreState *, int);
@@ -157,7 +144,7 @@ static void fft_core_instance_init(Object *obj)
     FFTCoreState *s = FFT_CORE(obj);
     
     /* allocate memory map region */
-    memory_region_init_io(&s->iomem, obj, &fft_core_ops, s, TYPE_FFT_CORE, 0x2000); // TODO change with a define
+    memory_region_init_io(&s->iomem, obj, &fft_core_ops, s, TYPE_FFT_CORE, 0x2000);
     sysbus_init_mmio(SYS_BUS_DEVICE(obj), &s->iomem);
 }
 

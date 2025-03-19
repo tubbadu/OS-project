@@ -57,7 +57,7 @@ static ssize_t fft_compute(const uint64_t *input, const uint64_t *inputi, uint64
     int i;    
     unsigned long addr1, addr2,addr_real, addr_imag;
 
-    for (i = 0; i < len; i++) { // TODO add a check on len and split in separate conversion if needed
+    for (i = 0; i < len; i++) { 
         addr1 = (2*i + 0) * 8;
         addr2 = (2*i + 1) * 8;
         addr_real = (fft_base + IN_START_ID) + addr1;
