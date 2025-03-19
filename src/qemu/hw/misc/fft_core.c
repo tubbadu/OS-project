@@ -12,9 +12,6 @@
 #include <complex.h>
 
 #include "qemu/typedefs.h"
-
-
-// Pietro's include (TODO remove this line)
 #include "qemu/osdep.h"
 #include "qemu/log.h"
 #include "qapi/error.h"
@@ -49,30 +46,10 @@ DECLARE_INSTANCE_CHECKER(FFTCoreState, FFT_CORE, TYPE_FFT_CORE)
 #define inttofloat *(double*)&
 
 #define SIZE 128 // number of couple of values (real + imaginary)
-#define INSIZE 32
 
 
-#define PI 3.14159265358979323846 // TODO change this with the constant inside math.h
+// #define PI 3.14159265358979323846 // TODO change this with the constant inside math.h
 
-// #define N 10  // Number of values to process at a time
-
-/*
- * 
- * 0x0 = idle
- * 0x1 = add data
- * 0x5 = finished
- * 
- * # example usage (accumulator):
- * busybox devmem 0x4000000 w 0x123  # write an input 
- * busybox devmem 0x4000640 w 0x1    # give command "plus"
- * busybox devmem 0x4000000 w 0x5000 # write another input 
- * busybox devmem 0x4000640 w 0x1    # give command "plus"
- * busybox devmem 0x4000320 64       # read output
- * busybox devmem 0x4000000 w 0x1000 # write another input 
- * busybox devmem 0x4000640 w 0x2    # give command "minus"
- * busybox devmem 0x4000320 64       # read output
- * 
- */
 
 struct FFTCoreState {
     SysBusDevice parent_obj;
@@ -96,7 +73,6 @@ static void compute_fft(FFTCoreState *, int);
 static void compute_fft(FFTCoreState *s, int size) {
     double complex val [SIZE];
     
-
     for (int k=0; k<SIZE; k++){
         val[k] = (inttofloat s->input[2*k]) + I * (inttofloat s->input[2*k + 1]);
     }
@@ -126,30 +102,23 @@ static uint64_t fft_core_read(void *opaque, hwaddr addr, unsigned int size)
 
     int addri = (int)addr;
     uint64_t ret;
-    
-    // qemu_log("addri = %d, reminder = %d, size = %d\n", addri, addri % 8, size);
-    
+        
     if(addri == STATUS_ID){
         ret = s->status;
     } else if(IN_START_ID <= addri && addri <= IN_END_ID){
         if(addri % 8 == 0){
             ret = s->input[ (addri - IN_START_ID) / 8 ];
-            // qemu_log("read: i = %d\n", (addri - IN_START_ID)/8);
         } else if(addri % 8 == 4){
             ret = s->input[ (addri - IN_START_ID - 4) / 8 ] >> 32;
-            // qemu_log("read: i = %d, >> 32\n", (addri - IN_START_ID - 4)/8);
         } else ret = 0xDEADBEEF;
     } else if(OUT_START_ID <= addri && addri <= OUT_END_ID){
         if(addri % 8 == 0){
             ret = s->output[ (addri - OUT_START_ID) / 8 ];
-            // qemu_log("read: i = %d\n", addri/8);
         } else if(addri % 8 == 4){
             ret = s->output[ (addri - OUT_START_ID - 4) / 8 ] >> 32;
-            // qemu_log("read: i = %d, >> 32\n", (addri - OUT_START_ID - 4)/8);
         } else ret = 0xDEADBEEF;
     } else ret = 0xDEADBEEF;
     
-    // qemu_log("READ:  address = 0x%X, data = 0x%X, size = %d\n", addri, ret, size);
     return ret;
 }
 
@@ -158,7 +127,6 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
     FFTCoreState *s = opaque;
     int addri = (int)addr;
     
-    // qemu_log("WRITE: address = 0x%X, data = 0x%X, size = %d\n", addri, data, size);
     
     if(addri == STATUS_ID){
         if(data == 0x1){
@@ -166,19 +134,16 @@ static void fft_core_write(void *opaque, hwaddr addr, uint64_t data, unsigned in
             compute_fft( s, SIZE );
             return;
         } else {
-            s->status = 0xF; // 0xF = error
+            s->status = 0xF;
         }
     } else if(IN_START_ID <= addri && addri <= IN_END_ID){
         if(addri % 8 == 0){
             s->input[ (addri - IN_START_ID) / 8 ] = data;
-            // qemu_log("write: i = %d\n", (addri - IN_START_ID)/8);
         } else if(addri % 8 == 4){
             s->input[ (addri - IN_START_ID - 4) / 8 ] |= data << 32;
-            // qemu_log("write: i = %d, << 32\n", (addri - IN_START_ID - 4)/8);
         }  
     } else {
-        s->status = 0xF; // 0xF = error
-        qemu_log("WRITE ERROR!\n");
+        s->status = 0xF;
     }
 }
 
@@ -214,56 +179,29 @@ type_init(fft_core_register_types)
 
 
 // Create the fft_core device.
+const char compatible[] = "daem,PtrauthDevice-1.0";
+DeviceState *fft_core_create_arm(const VirtMachineState *vms, int fft_core) {
+    DeviceState *dev = qdev_new(TYPE_FFT_CORE);
+    MachineState *ms = MACHINE(vms);
+    char *nodename;
+    
+    hwaddr base = vms->memmap[fft_core].base;
+    hwaddr size = vms->memmap[fft_core].size;
+        
+    sysbus_realize_and_unref(SYS_BUS_DEVICE(dev), &error_fatal);
+    sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, base);
+    
+    nodename = g_strdup_printf("/ptrauth@%" PRIx64, base);
+    qemu_fdt_add_subnode(ms->fdt, nodename);
+    qemu_fdt_setprop(ms->fdt, nodename, "compatible", compatible, sizeof(compatible));
+    
+    qemu_fdt_setprop_sized_cells(ms->fdt, nodename, "reg",
+                                2, base,
+                                2, size,
+                                2, base,
+                                2, 0);
 
-
-// #if defined(TARGET_AARCH64)
-    const char compatible[] = "daem,PtrauthDevice-1.0";
-    DeviceState *fft_core_create_arm(const VirtMachineState *vms, int fft_core) {
-        DeviceState *dev = qdev_new(TYPE_FFT_CORE);
-        MachineState *ms = MACHINE(vms);
-        char *nodename;
-        
-        hwaddr base = vms->memmap[fft_core].base;
-        hwaddr size = vms->memmap[fft_core].size;
-        // int irq = vms->irqmap[fft_core];
-        
-        // assert(size == QARMA_REG_SIZE);
-        
-        sysbus_realize_and_unref(SYS_BUS_DEVICE(dev), &error_fatal);
-        sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, base);
-        
-        // sysbus_connect_irq(SYS_BUS_DEVICE(dev), 0, qdev_get_gpio_in(vms->gic, irq));
-        
-        // Register the device inside the device tree
-        nodename = g_strdup_printf("/ptrauth@%" PRIx64, base);
-        qemu_fdt_add_subnode(ms->fdt, nodename);
-        qemu_fdt_setprop(ms->fdt, nodename, "compatible", compatible, sizeof(compatible));
-        
-        qemu_fdt_setprop_sized_cells(ms->fdt, nodename, "reg",
-                                    2, base,
-                                    2, size,
-                                    2, base,
-                                    2, 0);
-        
-        // qemu_fdt_setprop_cells(
-        //     ms->fdt, nodename, "interrupts",
-        //     GIC_FDT_IRQ_TYPE_SPI,      // shared periperal interrupt, can go to any core
-        //     irq,
-        //     GIC_FDT_IRQ_FLAGS_LEVEL_HI // high level triggered
-        // );
-        
-        g_free(nodename);
-        
-        return dev;
-    }
-// #else
-    // DeviceState *fft_core_create_riscv(hwaddr addr)
-    // {
-    //     DeviceState *dev = qdev_new(TYPE_FFT_CORE);
-    //     sysbus_realize_and_unref(SYS_BUS_DEVICE(dev), &error_fatal);
-    //     sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, addr);
-    //     return dev;
-    // }
-// #endif
-
-/**License: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)**/
+    g_free(nodename);
+    
+    return dev;
+}
