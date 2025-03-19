@@ -7,6 +7,7 @@
 #include <math.h>
 #include <complex.h>
 
+
 #include "../fft_module/fft_module.h"
 #include "../fftlib/fft_algorithm.h"
 #include "lib/fftcorelib.h"
@@ -79,7 +80,9 @@ int main(int argc, char **argv) {
 	FFTcore(vec, vec, NSAMPLES);
 	
 	int maxi = 0;
-	
+	for(int i=0; i<NSAMPLES; i++){
+		fprintf(output_fd, "%lf\n", cabs(vec[i]));
+	}
 	for(int i=0; i<NSAMPLES; i++){
 		if(cabs(vec[maxi]) < cabs(vec[i])){
 			maxi = i;
