@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source .env
-CROSS_COMPILE="$BASEDIR/buildroot-arm/output/host/bin/aarch64-linux-"
+CROSS_COMPILE="$BASEDIR/buildroot/output/host/bin/aarch64-linux-"
 
 cd $BASEDIR/test
 

@@ -2,8 +2,8 @@
 
 source .env
 
-KERNEL_IMAGE="$BASEDIR/buildroot-arm/output/images/Image"
-ROOTFS_IMAGE="$BASEDIR/buildroot-arm/output/images/rootfs.ext4"
+KERNEL_IMAGE="$BASEDIR/buildroot/output/images/Image"
+ROOTFS_IMAGE="$BASEDIR/buildroot/output/images/rootfs.ext4"
 MACHINE_TYPE="virt"
 CPU_TYPE="cortex-a53"
 MEMORY_SIZE="512M"

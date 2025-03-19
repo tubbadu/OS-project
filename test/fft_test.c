@@ -9,6 +9,7 @@
 
 #include "../fft_module/fft_module.h"
 #include "../fftlib/fft_algorithm.h"
+#include "lib/fftcorelib.h"
 
 #define NUM_COMPLEX_VALUES 256
 

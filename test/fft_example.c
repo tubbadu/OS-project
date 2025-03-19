@@ -7,8 +7,9 @@
 #include <math.h>
 #include <complex.h>
 
+#include "../fft_module/fft_module.h"
 #include "../fftlib/fft_algorithm.h"
-
+#include "lib/fftcorelib.h"
 int main() {
 	
 	double Fs = 1470.0;
@@ -56,6 +57,12 @@ int main() {
 	FFTcore(vec, vec, NSAMPLES);
 	
 	int maxi = 0;
+	
+	for(int i=0; i<NSAMPLES; i++){
+		if(cabs(vec[maxi]) < cabs(vec[i])){
+			maxi = i;
+		}
+	}
 			
 	double freq;
 	if(maxi > NSAMPLES/2){

@@ -3,31 +3,13 @@
 export PATH=$(echo "$PATH" | tr -d ' \t\n')
 source .env
 
-KERNEL_DIR="$BASEDIR/buildroot-arm/output/build/linux-6.12.9"
-BUILDROOT_DIR="$BASEDIR/buildroot-arm"
+KERNEL_DIR="$BASEDIR/buildroot/output/build/linux-6.12.9"
+BUILDROOT_DIR="$BASEDIR/buildroot"
 MODULE_DIR="$KERNEL_DIR/drivers/platform"
 SCRIPT_DIR="$BASEDIR/scripts"
-OUTPUT_DIR="$BASEDIR/buildroot-arm/output"
+OUTPUT_DIR="$BASEDIR/buildroot/output"
 TARGET_DIR="$OUTPUT_DIR/target"
 CROSS_COMPILE="$OUTPUT_DIR/host/bin/arm-linux-"
-
-# cp "$BASEDIR/src/kernel/fft_module.c" "$MODULE_DIR/"
-# cp "$BASEDIR/src/kernel/fft_module.h" "$MODULE_DIR/"
-
-# echo 'obj-$(CONFIG_FFT_MODULE) += fft_module.o' >> $MODULE_DIR/Makefile
-
-# cat <<EOL > $MODULE_DIR/Kconfig
-# config FFT_MODULE
-#     tristate "FFT Hardware Accelerator Module"
-#     depends on ARM64
-#     default n
-#     help
-#       This is a driver for the FFT hardware accelerator.
-# EOL
-
-# if ! grep -q 'source "drivers/platform/Kconfig"' $KERNEL_DIR/drivers/Kconfig; then
-#     echo 'source "drivers/platform/Kconfig"' >> $KERNEL_DIR/drivers/Kconfig
-# fi
 
 cd $BUILDROOT_DIR
 make ARCH=aarch64 CROSS_COMPILE=$CROSS_COMPILE linux-menuconfig

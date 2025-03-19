@@ -5,6 +5,7 @@ qemu
 buildroot.virgin
 buildroot-arm*
 buildroot-riscv*
+buildroot
 .directory
 .hidden
 .env
