@@ -12,4 +12,5 @@ buildroot
 fft_module.ko.bak*
 .vscode/
 test/fft_test
+test/fft_example
 !src/*
