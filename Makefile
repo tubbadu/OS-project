@@ -12,6 +12,7 @@ help:
 	@echo "  build-kernel-module   - Build kernel module."
 	@echo "  build-test            - Build kernel module test."
 	@echo "  copy-test             - Copy test executable to root filesystem."
+	@echo "  docs                  - Build mkdocs and start the server."
 	@echo "  help                  - Prints this help message."
 
 
