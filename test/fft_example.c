@@ -8,7 +8,6 @@
 #include <complex.h>
 
 #include "../fftlib/fft_algorithm.h"
-#include "lib/fftcorelib.h"
 
 int main() {
 	
@@ -33,11 +32,8 @@ int main() {
 	}
 	
 	
-	
-	// printf("file length:  %d\n", nlines);
-	
 	const int NSAMPLES = getNSAMPLES(nlines);
-	// printf("input length: %d\n", NSAMPLES);
+	
 	double complex *vec = malloc(sizeof(double complex) * NSAMPLES);
 	
 	rewind(fd); // put cursor back at the beginning of the file
@@ -56,29 +52,11 @@ int main() {
 	for(int i=nlines; i<NSAMPLES; i++){
 		vec[i] = 0;
 	}
-	
-	
-	// FFT(vec, NSAMPLES, 1);
+		
 	FFTcore(vec, vec, NSAMPLES);
-	printf("Risultato FFT:\n");
 	
-	
-	int maxi = 0, i = 0;
-	
-	for(int i = 0; i < NSAMPLES; i++) {
-		
-		if(modulo(vec[i]) >= modulo(vec[maxi])){
-			maxi = i;
-		}
-		
-		// printf("(%lf, %lf)\n", creal(vec[i]), cimag(vec[i]));
-		fprintf(output_fd, "%lf,%lf,%lf\n", creal(vec[i]), cimag(vec[i]), modulo(vec[i])); // Scrive la parte reale e immaginaria
-	}
-	
-	
-	
-	printf("MAX MODULO È %d di valore %f!\n",maxi,modulo(vec[maxi]));
-	
+	int maxi = 0;
+			
 	double freq;
 	if(maxi > NSAMPLES/2){
 		freq = (NSAMPLES - maxi) * (Fs / NSAMPLES);
@@ -86,7 +64,7 @@ int main() {
 		freq = maxi * (Fs / NSAMPLES);
 	}
 	
-	printf("La frequenza è %lf Hz\n", freq);
+	printf("The frequency is %lf Hz\n", freq);
 	
 	return 0;
 }

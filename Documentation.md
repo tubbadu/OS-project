@@ -22,7 +22,7 @@ This document describes the Linux kernel module developed to perform the **Fast 
 - Test environment emulated with QEMU.
 
 
-## 4. Features
+## 4. Features TODO: rivedere
 - **Process Management:** Handles the creation, execution, and termination of processes.
 - **Memory Allocation:** Implements a dynamic memory management system.
 - **Scheduling Algorithm:** Manages CPU time distribution among processes.
@@ -40,9 +40,9 @@ The module is divided into the following main sections:
 
 1. **Initialization**: Registering the module in the kernel and allocating necessary resources.
 2. **Signal Acquisition**: Reading the .csv file linked to the audio sample, which contains the recorded data of the sound.
-3. **FFT Processing**: Using the Cooley-Tukey FFT method, the module computes the FFT of the input signal.
+3. **FFT Processing**: Using the Cooley-Tukey FFT method, the module computes the FFT of the input signal. !!scrivi che funziona solo su potenze di 2
 4. **Note Identification**: The module computes the number of semitones by which the frequency differs from A4 (440 Hz).
-5. **Output of Results**: Writing the result to kernel logs.
+5. **Output of Results**: Writing the result to screen.
 ### 5.2 Folder Organization
 ```
 OS-project-main/   

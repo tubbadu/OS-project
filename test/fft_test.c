@@ -10,37 +10,9 @@
 #include "../fft_module/fft_module.h"
 #include "../fftlib/fft_algorithm.h"
 
-#include "lib/fftcorelib.h"
-
 #define NUM_COMPLEX_VALUES 256
-#define NUM_VALUES (NUM_COMPLEX_VALUES * 2)
 
 
-
-void generate_expected_output(double complex *input, double complex *output, size_t len) {
-	for(int i=0; i<len; i++){
-		output[i] = input[i];
-	}
-	FFT(output, NUM_COMPLEX_VALUES, 1);
-}
-
-char getsign(int64_t x){
-	if(x<0){
-		return '-';
-	} else {
-		return '+';
-	}
-}
-
-int printComplex(double real, double imag){
-	char sign = '+';
-
-	if(imag < 0){
-		sign = '-';
-	}
-	
-	return printf("%lf %c j %lf", real, sign, fabs(imag));
-}
 
 int main() {
 	int fd;
@@ -55,7 +27,6 @@ int main() {
 		input[i] = preal + I * pimag;
 		expected_output[i] = input[i];
 	}
-	
 	
 	data.len = NUM_COMPLEX_VALUES;
 	
@@ -73,7 +44,7 @@ int main() {
 		
 		if (expected_output[i] != output[i]) {
 			test_pass = 0;
-			// break;
+			break;
 		}
 	}
 
