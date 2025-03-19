@@ -1,4 +1,4 @@
-# OS Project
+# OS Project - FFT Core
 
 This project is a Linux kernel module designed to perform Fast Fourier Transform (FFT). It is then used on an audio signal in order to determine the corresponding musical note.
 
@@ -6,8 +6,9 @@ By integrating this functionality directly into the kernel, the module enables e
 
 
 - For environment setup instructions, refer to the [Setup.md](./Setup.md) file.
-- Detailed explanations of the kernel module, see [Kernel_module.md](./Kernel_module.md).
+- Detailed explanations of the kernel module, see [KernelModule.md](./KernelModule.md).
 - To learn more about the modifications made to QEMU for custom HW emulation, check [Qemu.md](./Qemu.md).
+- The example application is described in [ExampleApplication.md](./ExampleApplication.md).
 
 ---
 

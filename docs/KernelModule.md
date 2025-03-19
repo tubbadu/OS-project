@@ -15,7 +15,7 @@ This document describes the Linux kernel module developed to compute the **Fast 
 ## 3. Features TODO: rivedere
 - **Memory Allocation:**  Processes 128 complex input values (each 64-bit) and produces 128 complex output values.
 - **System Calls Handling:** Provides an interface for process interaction with the OS.
-- **User space library:** Included user space library to ease the interface with the kernel module.
+- **User space library:** Included [user space library](https://github.com/tubbadu/OS-project/tree/main/test/lib) to ease the interface with the kernel module.
 - **FFT Signal Processing:** Implements FFT algorithm for signal analysis.
 
 

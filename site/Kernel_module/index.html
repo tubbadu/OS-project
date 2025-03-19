@@ -40,7 +40,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-                <li class="toctree-l1"><a class="" href="../README.md">None</a>
+                <li class="toctree-l1"><a class="reference internal" href="../Setup/">QEMU &amp; Buildroot Setup Guide</a>
                 </li>
               </ul>
               <ul class="current">
@@ -75,6 +75,10 @@
         </ul>
     </li>
     </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Qemu/">palle</a>
                 </li>
               </ul>
       </div>
@@ -171,28 +175,24 @@ Calls <code>transform()</code> and scales the output by the step size.</p>
 <ol>
 <li><strong>Test Signal Generation</strong>:</li>
 <li>We generated synthetic test signals in MATLAB, such as sine waves.</li>
-<li>
-<p>Example of a 440 Hz sine wave generation:
-     <code>matlab
-     Fs = 1500;                     % Sampling frequency (1 kHz)
-     t = 0:1/Fs:1-1/Fs;             % Time vector (1 second)
-     f = 440;                       % Frequency of the sine wave (50 Hz)
-     signal = sin(2 * pi * f * t);  % Generate the sine wave</code></p>
-</li>
-<li>
-<p><strong>FFT Computation in MATLAB</strong>:</p>
-</li>
+<li>Example of a 440 Hz sine wave generation:</li>
+</ol>
+<pre><code class="language-matlab">Fs = 1500;                     % Sampling frequency (1 kHz)
+t = 0:1/Fs:1-1/Fs;             % Time vector (1 second)
+f = 440;                       % Frequency of the sine wave (50 Hz)
+signal = sin(2 * pi * f * t);  % Generate the sine wave
+</code></pre>
+<ol>
+<li><strong>FFT Computation in MATLAB</strong>:</li>
 <li>We computed the FFT of the test signal using MATLAB's built-in <code>fft</code> function.</li>
-<li>
-<p>Example:
-     <code>matlab
-     fft_result_matlab = fft(signal);                 % Compute the FFT
-     fft_magnitude_matlab = abs(fft_result_matlab);   % Get the magnitude
-     frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab);                        % Frequency axis</code></p>
-</li>
-<li>
-<p><strong>FFT Computation in the Module</strong>:</p>
-</li>
+<li>Example:</li>
+</ol>
+<pre><code class="language-matlab">fft_result_matlab = fft(signal);                 % Compute the FFT
+fft_magnitude_matlab = abs(fft_result_matlab);   % Get the magnitude
+frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab);                        % Frequency axis
+</code></pre>
+<ol>
+<li><strong>FFT Computation in the Module</strong>:</li>
 <li>The same test signal was processed by the module to compute the FFT.</li>
 <li>
 <p>The module's output was saved for comparison.</p>
@@ -201,11 +201,13 @@ Calls <code>transform()</code> and scales the output by the step size.</p>
 <p><strong>Comparison of Results</strong>: TODO</p>
 </li>
 <li>We compared the FFT results from MATLAB and the module <strong>element by element</strong>.</li>
-<li>We calculated the <strong>absolute difference</strong> between corresponding frequency bins:
-     <code>matlab
-     difference = abs(fft_magnitude_matlab - fft_magnitude_module);
-     mse = mean(difference.^2);  % Mean Squared Error
-     fprintf('Mean Squared Error: %f\n', mse);</code></li>
+<li>We calculated the <strong>absolute difference</strong> between corresponding frequency bins:</li>
+</ol>
+<pre><code class="language-matlab">difference = abs(fft_magnitude_matlab - fft_magnitude_module);
+mse = mean(difference.^2);  % Mean Squared Error
+fprintf('Mean Squared Error: %f\n', mse);
+</code></pre>
+<ul>
 <li>
 <p>A <strong>tolerance threshold</strong> was defined to account for minor numerical differences due to floating-point precision or implementation-specific optimizations.</p>
 </li>
@@ -213,21 +215,19 @@ Calls <code>transform()</code> and scales the output by the step size.</p>
 <p><strong>Visualization</strong>:</p>
 </li>
 <li>We plotted the FFT results from both MATLAB and the module to visually inspect the agreement.</li>
-<li>
-<p>Example:
-     <code>matlab
-     plot(frequencies, fft_magnitude_matlab, 'b', 'LineWidth', 1.5);  % MATLAB FFT
-     hold on;
-     plot(frequencies, fft_magnitude_module, 'r--', 'LineWidth', 1.5);  % Module FFT
-     xlabel('Frequency (Hz)');
-     ylabel('Magnitude');
-     legend('MATLAB FFT', 'Module FFT');
-     title('Comparison of FFT Results');
-     grid on;</code></p>
-</li>
-<li>
-<p><strong>Validation Metrics</strong>:</p>
-</li>
+<li>Example:</li>
+</ul>
+<pre><code class="language-matlab">plot(frequencies, fft_magnitude_matlab, 'b', 'LineWidth', 1.5);  % MATLAB FFT
+hold on;
+plot(frequencies, fft_magnitude_module, 'r--', 'LineWidth', 1.5);  % Module FFT
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+legend('MATLAB FFT', 'Module FFT');
+title('Comparison of FFT Results');
+grid on;
+</code></pre>
+<ol>
+<li><strong>Validation Metrics</strong>:</li>
 <li><strong>Mean Squared Error (MSE)</strong>: Computed to quantify the difference between the two FFT outputs.</li>
 <li>
 <p><strong>Frequency Bin Accuracy</strong>: Ensured that the dominant frequencies identified by the module matched those identified by MATLAB.</p>
@@ -290,6 +290,10 @@ Calls <code>transform()</code> and scales the output by the step size.</p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Setup/" class="btn btn-neutral float-left" title="QEMU &amp; Buildroot Setup Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Qemu/" class="btn btn-neutral float-right" title="palle">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -311,6 +315,10 @@ Calls <code>transform()</code> and scales the output by the step size.</p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../Setup/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Qemu/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

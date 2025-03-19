@@ -1,5 +1,7 @@
-site_name: OS Project
+site_name: OS Project - FFT Core
 nav:
-    - README.md
-    - Kernel_module.md
+    - Setup.md
+    - KernelModule.md
+    - Qemu.md
+    - ExampleApplication.md
 theme: readthedocs
