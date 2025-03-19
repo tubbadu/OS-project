@@ -12,21 +12,26 @@ To ensure the correctness of the results produced by the module, we used **MATLA
 
 - **Test Signal Generation**:
     - We generated synthetic test signals in MATLAB, such as sine waves, square waves, or combinations of multiple frequencies.
-    - Example of a 440 Hz sine wave generation:
+    - Inizialization of the vector:
 ```
-Fs = 1500;                    % Sampling frequency (1 kHz)
-t = 0:1/Fs:1-1/Fs;            % Time vector (1 second)
-f = 440;                      % Frequency of the sine wave (50 Hz)
-signal = sin(2 * pi * f * t); % Generate the sine wave
+Fs = 1470;                              % Sampling frequency (1 kHz)
+t = 0:1/Fs:1-1/Fs;                      % Time vector (1 second)
+f = 440;                                % Frequency of the sine wave (50 Hz)
+signal_mat=csvread("Eb_311Hz.csv");     % Import the generated signal
+near_power=ceil(log2(size(signal_mat,1)));
+padded_signal=zeros(2^(near_power),1);
+for i=1:size(signal_mat,1)
+    padded_signal(i)=signal_mat(i,1);
+end 
 ```
 
 - **FFT Computation in MATLAB**:
     - We computed the FFT of the test signal using MATLAB's built-in `fft` function.
-    - Example:
 ```
-fft_result_matlab = fft(signal);                                                % Compute the FFT
-fft_magnitude_matlab = abs(fft_result_matlab);                                  % Get the magnitude
-frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab); % Frequency axis
+fft_result_matlab = fft(padded_signal);  % Compute the FFT
+fft_magnitude_matlab = fftshift(abs(fft_result_matlab));  % Get the magnitude
+L=length(fft_result_matlab);   
+frequencies = Fs/L*(-L/2:L/2-1); % Frequency axis
 ```
 
 - **FFT Computation in the Module**:
@@ -37,7 +42,7 @@ frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab); 
     - We compared the FFT results from MATLAB and the module **element by element**.
     - We calculated the **absolute difference** between corresponding frequency bins:
 ```
-difference = abs(fft_magnitude_matlab - fft_magnitude_module);
+difference = abs(fft_magnitude_matlab - fft_c);
 mse = mean(difference.^2); % Mean Squared Error
 fprintf('Mean Squared Error: %f\n', mse);
 ```
@@ -45,7 +50,6 @@ fprintf('Mean Squared Error: %f\n', mse);
 
 1. **Visualization**:
     - We plotted the FFT results from both MATLAB and the module to visually inspect the agreement.
-    - Example:
 ```
 plot(frequencies, fft_magnitude_matlab, 'b', 'LineWidth', 1.5);    % MATLAB FFT
 hold on;
