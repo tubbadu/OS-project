@@ -5,14 +5,14 @@
 This document describes the Linux kernel module developed to compute the **Fast Fourier Transform (FFT)**. The module has been tested in an emulated environment using **QEMU** and **Buildroot**.
 
 
-## 2. Requirements TODO
+## 2. Requirements
 
 - Linux kernel compiled with support for custom module.
 - Buildroot configured to include the necessary libraries.
 - Test environment emulated with QEMU, modified to support the custom hardware.
 
 
-## 3. Features TODO: rivedere
+## 3. Features
 - **Memory Allocation:**  Processes 128 complex input values (each 64-bit) and produces 128 complex output values.
 - **System Calls Handling:** Provides an interface for process interaction with the OS.
 - **User space library:** Included [user space library](https://github.com/tubbadu/OS-project/tree/main/test/lib) to ease the interface with the kernel module.
@@ -95,7 +95,7 @@ frequencies = (0:length(fft_result_matlab)-1) * Fs / length(fft_result_matlab); 
    - The same test signal was processed by the module to compute the FFT.
    - The module's output was saved for comparison.
 
-4. **Comparison of Results**: TODO
+4. **Comparison of Results**: 
    - We compared the FFT results from MATLAB and the module **element by element**.
    - We calculated the **absolute difference** between corresponding frequency bins:
 ```matlab
